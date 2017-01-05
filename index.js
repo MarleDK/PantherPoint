@@ -4,11 +4,23 @@ var express = require('express')
 var app = express()
 var http = require('http').Server(app)
 var io = require('socket.io')(http)
-var linda = require('linda').Server.listen({ io: io, server: http})
+var linda = require(path.resolve(__dirname, 'linda')).Server.listen({ io: io, server: http})
 var jQuery = require('jquery')
 
 app.get('/', function (req, res) {
   res.sendFile(path.join(__dirname + '/chat.html'))
+})
+
+app.get('/host', function (req, res) {
+  res.sendFile(path.join(__dirname + '/host/host.html'))
+})
+
+app.get('/client', function (req, res) {
+  res.sendFile(path.join(__dirname + '/client/client.html'))
+})
+
+app.get('/index.css', function (req, res) {
+  res.sendFile(path.join(__dirname + '/index.css'))
 })
 
 app.get('/jquery/jquery.js', function(req, res) {
