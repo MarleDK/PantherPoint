@@ -1,0 +1,50 @@
+<html>
+  <head>
+    <title>Linda sample chat</title>
+  </head>
+  <body>
+    <h1>Linda sample chat</h1>
+    <div id="rooms"></div>
+    <input type="text" value="hello!" id="msg_body" />
+    <input type="button" value="send" id="btn_send" />
+    <div id="log"></div>
+    <hr />
+    <a href="https://github.com/node-linda/linda">https://github.com/node-linda/linda</a>
+    <script src="http://localhost:8931/js/jquery.min.js"></script>
+    <script src="http://localhost:8931/socket.io/socket.io.js"></script>
+    <script src="http://localhost:8931/linda/linda.js"></script>
+    <script>
+
+      var server_url = "http://localhost:8931";
+
+      var print = function(msg){
+        $("#log").prepend( $("<p>").text(msg) );
+      };
+
+      // connect Socket.IO & Linda
+      var socket = io.connect(server_url);
+      var linda = new Linda().connect(socket);
+      var ts = linda.tuplespace("chatroom1");
+
+      linda.io.on("connect", function(){
+        print("connect!! " + server_url + "/chatroom1");
+
+        // receive chat messages
+        ts.watch({type: "chat"}, function(err, tuple){
+          print("> " + tuple.data.message + "(from:" + tuple.from + ")");
+        });
+      });
+
+      // on page load
+      jQuery(function(){
+
+        // send chat message
+        $("#btn_send").click(function(){
+          var msg = $("#msg_body").val();
+          ts.write({type: "chat", message: msg});
+        });
+      });
+
+    </script>
+  </body>
+</html>
