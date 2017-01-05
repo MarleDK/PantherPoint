@@ -1,7 +1,7 @@
 {
   "name": "panther_point",
   "version": "1.0.0",
-  "description": "",
+  "description": " ",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
@@ -11,7 +11,7 @@
   "dependencies": {
     "express": "^4.14.0",
     "jquery": "^3.1.1",
-    "linda": "^1.2.2",
     "socket.io": "^1.7.2"
-  }
+  },
+  "repository": "https://github.com/MarleDK/PantherPoint"
 }

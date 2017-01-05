@@ -1,0 +1,12 @@
+{
+  "name": "linda-server",
+  "description": "linda-server",
+  "website": "https://github.com/node-linda/linda",
+  "success_url": "/",
+  "env": {
+    "NODE_ENV": "production",
+    "DEBUG": "linda*",
+    "TZ": "Asia/Tokyo",
+    "HEROKU_URL": "https://(YOUR-APP-NAME).herokuapp.com"
+  }
+}

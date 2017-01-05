@@ -1,0 +1,16 @@
+language: node_js
+node_js:
+  - "0.10"
+  - "iojs"
+before_script:
+  - npm install -g grunt-cli
+notifications:
+  slack:
+    secure: jFUZFHBuvPR2J/C1nd/yUmtiCfOWW2aNrZsoiul5FpBKz0FRPMvp4vOOHKx/CHxYq8kEzFunzJYbnr3j5oj3Ody+9E/SPUHUZth8I6skPJxNecYW0T2zE4tqUvg/fxS3Ckd7kqENtOx9ZS4Ou6YYhLC23lG/RyJ9ZXendiscxek=
+deploy:
+  provider: heroku
+  api_key:
+    secure: QFpQClWfN0sCxD9608AUBKSClxr1gWtaVYf0gwDc6cCppauyO9eZ5jTK/p87j5LD4jWKwZcfQagEbNNxKE9BAIXrrFU4uOTsc/Rrgj35da0GNN+cOoenvZf/nro0RBOtzKPV4Q5J678i8wi1jsZhASN8QIRez/oBtSwGGqUIHLM=
+  app: linda-server
+  on:
+    repo: node-linda/linda

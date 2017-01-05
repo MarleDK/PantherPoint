@@ -1,0 +1,27 @@
+extends layout
+
+block content
+  h1
+    span#tuplespace= name
+    span= " / "
+    span#tuple= JSON.stringify(tuple)
+
+  p#status
+  h2 write
+  p
+    input#btn_write(type="button", value=JSON.stringify(tuple))
+  p % curl -d 'tuple=#{JSON.stringify(tuple)}' http://#{req.headers.host}/#{name}
+  h2 watch #{JSON.stringify(tuple)}
+  div(style="display:none;")#suggest_box
+    span= "suggest - "
+    span#suggest
+  ul#log
+  script.
+    var name = "#{name}";
+    var tuple = JSON.parse(unescape("!{escape(JSON.stringify(tuple))}"));
+  script(src="/socket.io/socket.io.js")
+  script(src="/linda/linda.js")
+  script(src="/js/coffee-script.js")
+  script(src="/js/jquery.min.js")
+  script(src="/js/jquery.editable.min.js")
+  script(src="/coffee/tuplespace.coffee", type="text/coffeescript")

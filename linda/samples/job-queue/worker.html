@@ -1,0 +1,48 @@
+<html>
+  <head>
+    <title>worker</title>
+  </head>
+  <body>
+    <h1>worker</h1>
+    <div id="log"></div>
+    <hr />
+    <a href="https://github.com/node-linda/linda">https://github.com/node-linda/linda</a>
+    <script src="http://localhost:8931/js/jquery.min.js"></script>
+    <script src="http://localhost:8931/socket.io/socket.io.js"></script>
+    <script src="http://localhost:8931/linda/linda.js"></script>
+    <script>
+
+      var server_url = "http://localhost:8931"
+
+      var print = function(msg){
+        $("#log").prepend( $("<p>").text(msg) );
+      };
+
+      // connect Socket.IO & Linda
+      var socket = io.connect(server_url);
+      var linda = new Linda().connect(socket);
+      var ts = linda.tuplespace("jobqueue");
+
+      linda.io.on("connect", function(){
+        print("connect!! " + server_url + "/jobqueue");
+
+        work();
+      });
+
+      var work = function(){
+        ts.take({type: "request"}, function(err, tuple){
+          var result = eval(tuple.data.query);
+
+          print(tuple.data.query + " = " + result + " (from:" + tuple.from + ")");
+          ts.write({
+            type: "result",
+            result: result
+          });
+
+          work();
+        });
+      };
+
+    </script>
+  </body>
+</html>
