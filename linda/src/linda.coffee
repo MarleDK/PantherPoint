@@ -80,6 +80,16 @@ class Linda extends events.EventEmitter2
         socket.once 'disconnect', =>
           @tuplespace(data.tuplespace).cancel cid if cid
 
+      socket.on '__linda_takep', (data) =>
+        cid = @tuplespace(data.tuplespace).option(data.options).takep data.tuple, (err, tuple) ->
+          cid = null
+          socket.emit "__linda_takep_#{data.id}", err, tuple
+        cids[data.id] = cid
+        debug "takep\t#{JSON.stringify data} from #{info.from}"
+        @emit 'takep', data
+        socket.once 'disconnect', =>
+          @tuplespace(data.tuplespace).cancel cid if cid
+
       socket.on '__linda_read', (data) =>
         cid = @tuplespace(data.tuplespace).option(data.options).read data.tuple, (err, tuple) ->
           cid = null
@@ -87,6 +97,16 @@ class Linda extends events.EventEmitter2
         cids[data.id] = cid
         debug "read\t#{JSON.stringify data} from #{info.from}"
         @emit 'read', data
+        socket.once 'disconnect', =>
+          @tuplespace(data.tuplespace).cancel cid if cid
+
+      socket.on '__linda_readp', (data) =>
+        cid = @tuplespace(data.tuplespace).option(data.options).readp data.tuple, (err, tuple) ->
+          cid = null
+          socket.emit "__linda_readp_#{data.id}", err, tuple
+        cids[data.id] = cid
+        debug "readp\t#{JSON.stringify data} from #{info.from}"
+        @emit 'readp', data
         socket.once 'disconnect', =>
           @tuplespace(data.tuplespace).cancel cid if cid
 

@@ -38,8 +38,14 @@ class TupleSpace
   take: (tuple, callback) ->
     return @option({}).take tuple, callback
 
+  takep: (tuple, callback) ->
+    return @option({}).takep tuple, callback
+
   read: (tuple, callback) ->
     return @option({}).read tuple, callback
+
+  readp: (tuple, callback) ->
+    return @option({}).readp tuple, callback
 
   watch: (tuple, callback) ->
     return if typeof callback isnt 'function'
@@ -83,6 +89,17 @@ class ReadTakeOption
     @ts.linda.io.emit '__linda_read', {tuplespace: @ts.name, tuple: tuple, id: id, options: @opts}
     return id
 
+  readp: (tuple, callback) ->
+    return if typeof callback isnt 'function'
+    id = @ts.create_callback_id()
+    name = "__linda_readp_#{id}"
+    listener = (err, tuple) ->
+      callback err, tuple
+    @ts.io_callbacks.push {name: name, listener: listener}
+    @ts.linda.io.once name, listener
+    @ts.linda.io.emit '__linda_readp', {tuplespace: @ts.name, tuple: tuple, id: id, options: @opts}
+    return id
+
   take: (tuple, callback) ->
     return if typeof callback isnt 'function'
     id = @ts.create_callback_id()
@@ -92,6 +109,17 @@ class ReadTakeOption
     @ts.io_callbacks.push {name: name, listener: listener}
     @ts.linda.io.once name, listener
     @ts.linda.io.emit '__linda_take', {tuplespace: @ts.name, tuple: tuple, id: id, options: @opts}
+    return id
+
+  takep: (tuple, callback) ->
+    return if typeof callback isnt 'function'
+    id = @ts.create_callback_id()
+    name = "__linda_takep_#{id}"
+    listener = (err, tuple) ->
+      callback err, tuple
+    @ts.io_callbacks.push {name: name, listener: listener}
+    @ts.linda.io.once name, listener
+    @ts.linda.io.emit '__linda_takep', {tuplespace: @ts.name, tuple: tuple, id: id, options: @opts}
     return id
 
 if window?

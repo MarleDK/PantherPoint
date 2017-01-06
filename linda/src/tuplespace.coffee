@@ -41,6 +41,9 @@ module.exports = class TupleSpace
   read: (tuple, callback) ->
     return @option({}).read tuple, callback
 
+  readp: (tuple, callback) ->
+    return @option({}).readp tuple, callback
+
   take: (tuple, callback) ->
     return @option({}).take tuple, callback
 
@@ -104,6 +107,23 @@ class ReadTakeOption
     @ts.callbacks.push {type: 'read', callback: callback, tuple: tuple, id: id}
     return id
 
+  readp: (tuple, callback) ->
+    return unless typeof callback is 'function'
+    if !Tuple.isHash(tuple) and !(tuple instanceof Tuple)
+      setImmediate -> callback('argument_error')
+      return null
+    tuple = new Tuple(tuple) unless tuple instanceof Tuple
+    seq = switch @opts.sort
+      when 'queue' then [0..@ts.size-1]
+      when 'stack' then [@ts.size-1..0]
+    for i in seq
+      t = @ts.tuples[i]
+      if tuple.match t
+        setImmediate -> callback(null, t)
+        return
+    setImmediate -> callback("tuple does not exist", null)
+    return
+
   take: (tuple, callback) ->
     return unless typeof callback is 'function'
     if !Tuple.isHash(tuple) and !(tuple instanceof Tuple)
@@ -122,3 +142,21 @@ class ReadTakeOption
     id = @ts.create_callback_id()
     @ts.callbacks.push {type: 'take', callback: callback, tuple: tuple, id: id}
     return id
+
+  takep: (tuple, callback) ->
+    return unless typeof callback is 'function'
+    if !Tuple.isHash(tuple) and !(tuple instanceof Tuple)
+      setImmediate -> callback('argument_error')
+      return null
+    tuple = new Tuple(tuple) unless tuple instanceof Tuple
+    seq = switch @opts.sort
+      when 'queue' then [0..@ts.size-1]
+      when 'stack' then [@ts.size-1..0]
+    for i in seq
+      t = @ts.tuples[i]
+      if tuple.match t
+        setImmediate -> callback(null, t)
+        @ts.tuples.splice i, 1  # delete tuple
+        return
+    setImmediate -> callback("tuple does not exist", null)
+    return
