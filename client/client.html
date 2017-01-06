@@ -1,0 +1,89 @@
+<html>
+<head>
+<title>PantherPoint Client</title>
+<link href="https://fonts.googleapis.com/css?family=Open+Sans" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/css/bootstrap.min.css" />
+    <style>
+    h1 {
+    font-family: 'Open Sans', sans-serif;
+        }
+    </style>
+</head>
+<body>
+
+
+
+<div class="text-center" id="main">
+    <h1>PantherPoint Client</h1>
+    <p>Indtast password for at connecte til skærmen:</p>
+    <input class="input-lg" type="text" value="" id="tekstfelt"><br><br>
+    <input class="btn btn-primary" type="button" value="Connect" id="btn_connect">
+    <input class="btn btn-primary" type="button" value="Add loginCode tuple" id="btn_add">
+    <br>
+    <div id="log"></div>
+</div>
+
+    
+<script src="/socket.io/socket.io.js"></script>
+<script src="/linda/linda.js"></script>
+<script src="/jquery/jquery.js"></script>    
+<script>
+  var server_url = "http://localhost:3000";
+
+  var print = function(msg){
+    $("#log").prepend( $("<p>").text(msg) );
+  };    
+    
+  var socket = io.connect(server_url);
+  var linda = new Linda().connect(socket);
+  var ts = linda.tuplespace("room1");
+
+  linda.io.on("connect", function(){
+    print("connect!! " + server_url + "/room1");
+
+    // receive chat messages
+    ts.watch({type: "loginCode"}, function(err, tuple){
+      print("> " + tuple.data.message + "(from:" + tuple.from + ")");
+    });
+  });
+
+  // on page load
+  jQuery(function(){
+
+    // send chat message
+    $("#btn_connect").click(function(){
+      var msg = $("#tekstfelt").val();
+
+          ts.readp({type: "loginCode", message: msg}, function(err, tuple){
+            if(tuple == null){
+              print(err);
+            } else if(tuple.data.message == msg) {
+              print("Connected to room " + msg);
+            } else {
+               print("Password does not exist"); 
+            }
+          });
+        });
+        
+        /*ts.read({type: "loginCode", message: msg}, function(err, tuple){
+            if(tuple.data.message == msg){
+                print("Connected to tuple: " + tuple.data.message);
+            } else {
+                print("No tuple with that password exists");
+        }*/
+            
+        
+        
+//    console.log("læst tuplespace: " + tuple.data)
+    });
+    $("#btn_add").click(function(){
+      var msg = $("#tekstfelt").val();
+      ts.write({type: "loginCode", message: msg});
+    console.log("Added to tuplespace: " + msg)
+    });
+
+
+</script>
+
+</body>
+</html>
