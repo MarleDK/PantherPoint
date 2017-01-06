@@ -7,6 +7,7 @@ var io = require('socket.io')(http)
 var linda = require(path.resolve(__dirname, 'linda')).Server.listen({ io: io, server: http})
 var jQuery = require('jquery')
 
+//Usersites
 app.get('/', function (req, res) {
   res.sendFile(path.join(__dirname + '/chat.html'))
 })
@@ -19,6 +20,16 @@ app.get('/client', function (req, res) {
   res.sendFile(path.join(__dirname + '/client/client.html'))
 })
 
+//Dev
+app.get('/test', function (req, res) {
+  res.sendFile(path.join(__dirname + '/tests.html'))
+})
+
+app.get('/tests', function (req, res) {
+  res.sendFile(path.join(__dirname + '/tests.html'))
+})
+
+//Resources
 app.get('/index.css', function (req, res) {
   res.sendFile(path.join(__dirname + '/index.css'))
 })

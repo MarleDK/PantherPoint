@@ -1,0 +1,25 @@
+.button {
+
+  /* Basic button style */
+	display: block;
+	height: 25vh;
+	width: 75vh;
+	background: #ff9933;
+	border: 0.1vh solid #ff8000;
+  -moz-border-radius: 15px;
+  -webkit-border-radius: 15px;
+  /*margin: 0 auto;*/
+
+
+  /* Text in button style */
+  color: rgba(0, 0, 0, 1);
+	text-align: center;
+	font: bold 2.6em "Helvetica Neue", Arial, Helvetica, Geneva, sans-serif;
+  text-decoration: none;
+  line-height: 25vh
+
+}
+
+.h10 {
+  height: 2vh;
+}
