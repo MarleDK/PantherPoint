@@ -18,7 +18,7 @@ app.get('/', function (req, res) {
 
 // Client
 app.get('/client', function (req, res) {
-  res.sendFile(path.join(__dirname + '/client/index.html'))
+  res.sendFile(path.join(__dirname + '/client/client.html'))
 })
 
 // Host
@@ -29,6 +29,9 @@ app.get('/host', function (req, res) {
 // Chat
 app.get('/chat', function (req, res) {
   res.sendFile(path.join(__dirname + '/chat/index.html'))
+})
+app.get('/chat/messenger', function (req, res) {
+  res.sendFile(path.join(__dirname + '/chat/message.html'))
 })
 app.get('/chat/:name', function (req, res) {
   res.render(path.join(__dirname + '/chat/chat.html'), {
