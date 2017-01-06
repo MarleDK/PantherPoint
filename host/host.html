@@ -1,0 +1,83 @@
+<html>
+  <head>
+    <title>Host</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/css/bootstrap.min.css" />
+  </head>
+  <body class="container">
+    <h1>Host</h1>
+    <h2 class="code" style="color: red"></h2>
+    <hr />
+    <div id="log"></div>
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="/linda/linda.js"></script>
+    <script src="/jquery/jquery.js"></script>
+    <script>
+      var server_url = "http://localhost:3000";
+      var socket = io.connect(server_url);
+      var linda = new Linda().connect(socket);
+      var hosts = linda.tuplespace('hosts');
+      
+      hosts.linda.io.on('connect', function () {
+        console.log('connected to tuplespace: ' + hosts.name);
+
+        hosts.readp({type: 'nextRoom'}, function (err, tuple) {
+          if (!tuple) {
+            uniqueCode = generateCode();
+          } else {
+            uniqueCode = generateCode(tuple.data.room);
+          }
+          var room = linda.tuplespace(uniqueCode)
+          handleNewRoom(room);
+        });
+      });
+
+      function handleNewRoom(room) {
+        $('.code').text(room.name);
+        hosts.write({type: 'nextRoom', room: room.name});
+        room.watch({type: 'player'}, function (err, tuple) {
+          print(tuple.data.name + " connected");
+        });
+      }
+
+      function nextLetter (s) {
+        if (!isNaN(s)) {
+          var int = parseInt(s);
+          if (int === 9) {
+            int = -1
+          }
+          int += 1
+          return int;
+        } else {
+          return s.replace(/([a-zA-Z])[^a-zA-Z]*$/, function(a){
+              var c = a.charCodeAt(0);
+              switch(c){
+                  case 90: return 'A';
+                  case 122: return 'a';
+                  default: return String.fromCharCode(++c);
+              }
+          });
+        }
+      }
+
+      function generateCode (code = null) {
+        if (code) {
+          code = code.split("");
+          for (var i = 0; i<code.length; i++) {
+            code[i] = nextLetter(code[i]);
+          }
+          return code.join("");
+        } else {
+          return "a1k4"
+        }
+      };
+
+      function print (msg) {
+        // 
+        $("#log").prepend( '<p>'+msg+'</p><hr />' );
+      };
+      
+      linda.io.on("connect", function() {
+      });
+    </script>
+  </body>
+</html>

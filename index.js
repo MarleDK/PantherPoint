@@ -25,6 +25,9 @@ app.get('/client', function (req, res) {
 app.get('/host', function (req, res) {
   res.sendFile(path.join(__dirname + '/host/host.html'))
 })
+app.get('/host/client', function (req, res) {
+  res.sendFile(path.join(__dirname + '/host/client.html'))
+})
 
 // Chat
 app.get('/chat', function (req, res) {
