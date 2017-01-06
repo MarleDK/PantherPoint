@@ -7,6 +7,8 @@
     <div id="rooms"></div>
     <input type="text" value="hello!" id="msg_body" />
     <input type="button" value="send" id="btn_send" />
+    <input type="button" value="readp" id="btn_readp" />
+    <input type="button" value="takep" id="btn_takep" />
     <div id="log"></div>
     <hr />
     <script src="/socket.io/socket.io.js"></script>
@@ -40,6 +42,29 @@
           var msg = $("#msg_body").val();
           ts.write({type: "chat", message: msg});
         });
+
+        $("#btn_readp").click(function(){
+          var msg = $("#msg_body").val();
+          ts.readp({type: "chat", message: msg}, function(err, tuple){
+            if(tuple == null){
+              print(err)
+            } else {
+              print("Tuple exists, msg: " + msg)
+            }
+          });
+        });
+
+        $("#btn_takep").click(function(){
+          var msg = $("#msg_body").val();
+          ts.takep({type: "chat", message: msg}, function(err, tuple){
+            if(tuple == null){
+              print(err)
+            } else {
+              print("Tuple exists, msg: " + msg)
+            }
+          });
+        });
+
       });
 
     </script>
