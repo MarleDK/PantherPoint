@@ -30,18 +30,9 @@
       }
 
       linda.io.on("connect", function(){
-        read();
-        read();
-        read();
-        read();
-        read();
-        read();
-        read();
-        read();
-
-        // ts.watch({type: "msg"}, function(err, tuple){
-        //   print(tuple.data.from + "> " + tuple.data.msg);
-        // });
+        ts.watch({type: "msg"}, function(err, tuple){
+          print(tuple.data.from + "> " + tuple.data.msg);
+        });
       });
     </script>
   </body>
