@@ -43,6 +43,10 @@ app.get('/chat/:name', function (req, res) {
 })
 
 //Dev
+app.get('/chat2', function (req, res) {
+  res.sendFile(path.join(__dirname + '/chat.html'))
+})
+
 app.get('/test', function (req, res) {
   res.sendFile(path.join(__dirname + '/tests.html'))
 })
