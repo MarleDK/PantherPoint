@@ -13,7 +13,7 @@ app.engine('html', exphbs());
 app.set('view engine', 'handlebars')
 
 app.get('/', function (req, res) {
-  res.sendFile(path.join(__dirname + '/chat.html'))
+  res.sendFile(path.join(__dirname + '/index.html'))
 })
 
 // Client
