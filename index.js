@@ -28,10 +28,10 @@ app.get('/host', function (req, res) {
 
 // Chat
 app.get('/chat', function (req, res) {
-  res.sendFile(path.join(__dirname + '/host/index.html'))
+  res.sendFile(path.join(__dirname + '/chat/index.html'))
 })
 app.get('/chat/:name', function (req, res) {
-  res.render(path.join(__dirname + '/host/chat.html'), {
+  res.render(path.join(__dirname + '/chat/chat.html'), {
     name: req.params.name
   });
 })
