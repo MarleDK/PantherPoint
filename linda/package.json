@@ -1,0 +1,55 @@
+{
+  "name": "linda",
+  "version": "1.2.2",
+  "private": false,
+  "description": "Linda implementation on Socket.IO",
+  "main": "lib/linda.js",
+  "scripts": {
+    "start": "coffee ./bin/linda-server.coffee",
+    "test": "grunt test"
+  },
+  "bin": {
+    "linda-server": "./bin/linda-server.coffee"
+  },
+  "keywords": [
+    "linda",
+    "socket.io"
+  ],
+  "author": "Sho Hashimoto <hashimoto@shokai.org>",
+  "license": "MIT",
+  "devDependencies": {
+    "coffee-errors": "*",
+    "mocha": "*",
+    "grunt": "*",
+    "grunt-simple-mocha": "*",
+    "grunt-notify": "*",
+    "grunt-contrib-coffee": "*",
+    "grunt-coffeelint": "*",
+    "grunt-contrib-watch": "*",
+    "grunt-jsonlint": "*",
+    "async": "*"
+  },
+  "dependencies": {
+    "body-parser": "*",
+    "coffee-script": "*",
+    "debug": "*",
+    "eventemitter2": "*",
+    "express": "^4.8.5",
+    "jade": "^1.5.0",
+    "optparse": "*",
+    "request": "*",
+    "socket.io": "*",
+    "socket.io-client": "*"
+  },
+  "directories": {
+    "test": "tests"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/node-linda/linda.git"
+  },
+  "bugs": {
+    "url": "https://github.com/node-linda/linda/issues"
+  },
+  "homepage": "https://github.com/node-linda/linda"
+}

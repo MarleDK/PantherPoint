@@ -7,20 +7,21 @@
     <div id="rooms"></div>
     <input type="text" value="hello!" id="msg_body" />
     <input type="button" value="send" id="btn_send" />
-    <input type="button" value="readp" id="btn_readp" />
-    <input type="button" value="takep" id="btn_takep" />
     <div id="log"></div>
     <hr />
-    <script src="/socket.io/socket.io.js"></script>
-    <script src="/linda/linda.js"></script>
-    <script src="/jquery/jquery.js"></script>
+    <a href="https://github.com/node-linda/linda">https://github.com/node-linda/linda</a>
+    <script src="http://localhost:8931/js/jquery.min.js"></script>
+    <script src="http://localhost:8931/socket.io/socket.io.js"></script>
+    <script src="http://localhost:8931/linda/linda.js"></script>
     <script>
-      var server_url = "http://localhost:3000";
+
+      var server_url = "http://localhost:8931";
 
       var print = function(msg){
         $("#log").prepend( $("<p>").text(msg) );
       };
 
+      // connect Socket.IO & Linda
       var socket = io.connect(server_url);
       var linda = new Linda().connect(socket);
       var ts = linda.tuplespace("chatroom1");
@@ -42,29 +43,6 @@
           var msg = $("#msg_body").val();
           ts.write({type: "chat", message: msg});
         });
-
-        $("#btn_readp").click(function(){
-          var msg = $("#msg_body").val();
-          ts.readp({type: "chat", message: msg}, function(err, tuple){
-            if(tuple == null){
-              print(err)
-            } else {
-              print("Tuple exists, msg: " + msg)
-            }
-          });
-        });
-
-        $("#btn_takep").click(function(){
-          var msg = $("#msg_body").val();
-          ts.takep({type: "chat", message: msg}, function(err, tuple){
-            if(tuple == null){
-              print(err)
-            } else {
-              print("Tuple exists, msg: " + msg)
-            }
-          });
-        });
-
       });
 
     </script>

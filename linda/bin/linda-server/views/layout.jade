@@ -1,0 +1,11 @@
+doctype html
+html
+  head
+    title= title
+    link(rel='stylesheet', href='/css/style.css')
+  body
+    block content
+    hr
+    - var url = package.homepage;
+    a(href= url)= url
+    span= " v"+package.version
