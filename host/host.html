@@ -19,8 +19,8 @@
           <li class="dropdown">
             <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Activity <span class="caret"></span></a>
             <ul class="dropdown-menu">
-              <li><a href="#">Chat</a></li>
-              <li><a href="#">Sjovt spil</a></li>
+              <li><a href="#" class="activity" data-name="chat" id="activity-chat">Chat</a></li>
+              <li><a href="#" class="activity" data-name="snake" id="activity-game">Sjovt spil</a></li>
             </ul>
           </li>
         </ul>
@@ -42,13 +42,14 @@
       var socket = io.connect(server_url);
       var linda = new Linda().connect(socket);
       var hosts = linda.tuplespace('hosts');
+      var room;
       
       hosts.linda.io.on('connect', function () {
         console.log('connected to tuplespace: ' + hosts.name);
 
         hosts.take({type: 'nextRoom'}, function (err, tuple) {
           uniqueCode = generateCode(tuple.data.room);
-          var room = linda.tuplespace(uniqueCode)
+          room = linda.tuplespace(uniqueCode);
           handleNewRoom(room);
         });
       });
@@ -59,6 +60,9 @@
         hosts.write({type: 'room', room: room.name});
         room.watch({type: 'player'}, function (err, tuple) {
           print(tuple.data.name + " connected");
+        });
+        room.watch({type: 'activity'}, function (err, tuple) {
+          countDown(tuple.data.activity, 5);
         });
       }
 
@@ -92,9 +96,27 @@
 
       function print (msg) {
         // Foldable
-        $("#log").prepend( '<p>'+msg+'</p><hr />' );
+        $("#log").append( '<p>'+msg+'</p><hr />' );
         $("#log").scrollTop($("#log")[0].scrollHeight);
       };
+
+      function countDown (activity, time) {
+        print(activity + " starting in " + time + " seconds");
+        (function myLoop (i) {
+           setTimeout(function () {
+              print(activity + " starting in " + i + " seconds");
+              if (i--) myLoop(i);
+           }, 1000)
+        })(--time);
+      }
+
+      $(function() {
+        $('.activity').click(function(e){
+          hosts.takeroom({room: room.name});
+          var target = $(e.target);
+          room.write({type: 'activity', activity: target.data('name')});
+        });
+      });
       
       linda.io.on("connect", function() {
         console.log('😁');
