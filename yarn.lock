@@ -202,6 +202,10 @@ boom@2.x.x:
   dependencies:
     hoek "2.x.x"
 
+bootstrap@^3.3.7:
+  version "3.3.7"
+  resolved "https://registry.yarnpkg.com/bootstrap/-/bootstrap-3.3.7.tgz#5a389394549f23330875a3b150656574f8a9eb71"
+
 brace-expansion@^1.0.0:
   version "1.1.6"
   resolved "https://registry.yarnpkg.com/brace-expansion/-/brace-expansion-1.1.6.tgz#7197d7eaa9b87e648390ea61fc66c84427420df9"
@@ -577,7 +581,7 @@ express-handlebars@^3.0.0:
     object.assign "^4.0.3"
     promise "^7.0.0"
 
-express@^4.14.0, express@^4.8.5:
+express@^4.8.5:
   version "4.14.0"
   resolved "https://registry.yarnpkg.com/express/-/express-4.14.0.tgz#c1ee3f42cdc891fb3dc650a8922d51ec847d0d66"
   dependencies:
@@ -1099,21 +1103,6 @@ latest-version@^1.0.0:
 lazy-cache@^1.0.3:
   version "1.0.4"
   resolved "https://registry.yarnpkg.com/lazy-cache/-/lazy-cache-1.0.4.tgz#a1d78fc3a50474cb80845d3b3b6e1da49a446e8e"
-
-linda@^1.2.2:
-  version "1.2.2"
-  resolved "https://registry.yarnpkg.com/linda/-/linda-1.2.2.tgz#33eea268036d2d0826da7fce9ae57ef25510ff0e"
-  dependencies:
-    body-parser "*"
-    coffee-script "*"
-    debug "*"
-    eventemitter2 "*"
-    express "^4.8.5"
-    jade "^1.5.0"
-    optparse "*"
-    request "*"
-    socket.io "*"
-    socket.io-client "*"
 
 lodash._baseassign@^3.0.0:
   version "3.2.0"
@@ -1764,7 +1753,7 @@ socket.io-parser@2.3.1:
     isarray "0.0.1"
     json3 "3.3.2"
 
-socket.io@*, socket.io@^1.7.2:
+socket.io@*:
   version "1.7.2"
   resolved "https://registry.yarnpkg.com/socket.io/-/socket.io-1.7.2.tgz#83bbbdf2e79263b378900da403e7843e05dc3b71"
   dependencies:

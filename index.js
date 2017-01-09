@@ -8,6 +8,9 @@ var io = require('socket.io')(http)
 var linda = require(path.resolve(__dirname, 'linda')).Server.listen({ io: io, server: http})
 var jQuery = require('jquery')
 
+var hosts = linda.tuplespace('hosts');
+hosts.write({type: 'nextRoom', room: 'a1k4'});
+
 
 app.engine('html', exphbs());
 app.set('view engine', 'handlebars')
@@ -62,6 +65,9 @@ app.get('/index.css', function (req, res) {
 
 app.get('/jquery/jquery.js', function(req, res) {
     res.sendFile(path.join(__dirname + '/node_modules/jquery/dist/jquery.min.js'));
+});
+app.get('/bootstrap/bootstrap.js', function(req, res) {
+    res.sendFile(path.join(__dirname + '/node_modules/bootstrap/dist/js/bootstrap.min.js'));
 });
 
 http.listen(3000, function () {
