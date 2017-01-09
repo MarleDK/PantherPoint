@@ -3,18 +3,39 @@
 <title>PantherPoint Client</title>
 <link href="https://fonts.googleapis.com/css?family=Open+Sans" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/css/bootstrap.min.css" />
-    <style>
-    h1 {
-    font-family: 'Open Sans', sans-serif;
-        }
-    </style>
+<link rel="stylesheet" href="/index.css" />
 </head>
-<body>
+<nav class="navbar navbar-inverse navbar-fixed-top">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="#">Client</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li class="dropdown">
+          <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="true">Menu <span class="caret"></span></a>
+          <ul class="dropdown-menu">
+            <li><a href="#">Leave host</a></li>
+            <li><a href="#">Connect to multiple hosts</a></li>
+          </ul>
+        </li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div>
+</nav>
+<body class="container" style="margin-top: 70px">
 
 
-
-<div class="text-center" id="main">
-    <h1>PantherPoint Client</h1>
+<!-- This is the first view the user see -->
+<div class="text-center" id="login">
     <p>Indtast password for at connecte til skærmen:</p>
     <input class="input-lg" type="text" value="" id="tekstfelt"><br><br>
     <p id="err_msg" style="color:red;"> <p>
@@ -26,12 +47,22 @@
     <div id="log"></div>
 </div>
 
+<!-- This view is shown, when the user is connected to a host -->
+<div class="text-center" id="choose_activity" style="display:none">
+  <h1 id="host_name"> </h1>
+  <div class="btn-group-vertical btn-lg">
+    <button id="chat" type="button" class="btn btn-primary btn-big"> chat </button>
+    <button id="snake" type="button" class="btn btn-primary btn-big"> snake </button>
+  </div>
+</div>
+
 
 <script src="/socket.io/socket.io.js"></script>
 <script src="/linda/linda.js"></script>
 <script src="/jquery/jquery.js"></script>
 <script>
   var server_url = "http://localhost:3000";
+  listOfViews = ["login","choose_activity","snake","chat"]
 
   var print = function(msg){
     $("#log").prepend( $("<p>").text(msg) );
@@ -41,6 +72,7 @@
   var linda = new Linda().connect(socket);
   var main
 
+
   linda.io.on("connect", function(){
     console.log("connected to distributing server " + server_url + "/main");
     main = linda.tuplespace("hosts")
@@ -49,6 +81,40 @@
       print("> " + tuple.data.message + "(from:" + tuple.from + ")");
     });*/
   });
+
+  var updateView = function(activity){
+    listOfViews.forEach(function(view){
+      if(view == activity){
+        jQuery($("#"+view).show())
+      } else {
+        jQuery($("#"+view).hide())
+      }
+    })
+  }
+
+  var startWatchHost = function(ts, name){
+    var actWatch = ts.watch({type:"activity"},function(err,tuple){
+      updateView(tuple.data.activity)
+    });
+
+    //Denne function sender en ny tuple, med
+    var keepAlive = setInterval(function(){
+      ts.write({type: "player", name: name});
+    },60*1000*3);
+
+    //Denne del sletter watch functioner, så de ikke kører mere, hvis host'en ikke er connected til tuple-spacet mere
+    //Og sletter setInterval's
+    var chekcHostAlive = setInterval(function(){
+      ts.readp({type:"hostActive"}, function(err, tuple){
+        if(tuple == null){
+          ts.cancel(actWatch)
+          clearInterval(keepAlive)
+          clearInterval(checkHostAlive)
+        }
+      });
+    },60*1000*3);
+
+  }
 
   // on page load
   jQuery(function(){
@@ -63,8 +129,13 @@
           var ts = linda.tuplespace(room);
 
           ts.write({type: "player", name: name});
-        }
+          $("#host_name").html("Connected to: "+room)
+          $("#login").hide()
+          ts.read({type:"activity"}, function(err1, tuple1){
+            updateView(tuple1.data.activity)
 
+          })
+        }
       })
     });
 
