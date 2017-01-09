@@ -35,6 +35,37 @@ module.exports = class TupleSpace
       @callbacks.splice i, 1
     @tuples.push tuple unless taked
 
+  replace: (tuple1, tuple2, options={expire: Tuple.DEFAULT.expire}) ->
+    return if !Tuple.isHash(tuple2) and !(tuple2 instanceof Tuple)
+    return if !Tuple.isHash(tuple1) and !(tuple1 instanceof Tuple)
+    tuple2 = new Tuple(tuple2) unless tuple2 instanceof Tuple
+    tuple1 = new Tuple(tuple1) unless tuple1 instanceof Tuple
+    tuple2.expire =
+      if typeof options.expire is 'number' and options.expire > 0
+        options.expire
+      else
+        Tuple.DEFAULT.expire
+    tuple2.from = options.from
+    called = []
+    taked = false
+    for i in [0...@callbacks.length]
+      c = @callbacks[i]
+      if c.tuple.match tuple2
+        called.push i if c.type is 'take' or c.type is 'read'
+        do (c) ->
+          setImmediate -> c.callback(null, tuple2)
+        if c.type is 'take'
+          taked = true
+          break
+    for i in called by -1
+      @callbacks.splice i, 1
+    for i in [0...@tuples.length]
+      if tuple1.match @tuples[i]
+        @tuples.splice i, 1
+        break;
+
+    @tuples.push tuple2 unless taked
+
   create_callback_id: ->
     return Date.now() - Math.random()
 

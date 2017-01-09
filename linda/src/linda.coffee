@@ -70,6 +70,12 @@ class Linda extends events.EventEmitter2
         debug "write\t#{JSON.stringify data} from #{info.from}"
         @emit 'write', data
 
+      socket.on '__linda_replace', (data) =>
+        data.options?.from = info.from
+        @tuplespace(data.tuplespace).replace data.tuple1, data.tuple2, data.options
+        debug "replace\t#{JSON.stringify data} from #{info.from}"
+        @emit 'replace', data
+
       socket.on '__linda_take', (data) =>
         cid = @tuplespace(data.tuplespace).option(data.options).take data.tuple, (err, tuple) ->
           cid = null

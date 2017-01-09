@@ -63,6 +63,61 @@
       }
     };
 
+    TupleSpace.prototype.replace = function(tuple1, tuple2, options) {
+      var c, called, i, j, l, m, ref, ref1, taked;
+      if (options == null) {
+        options = {
+          expire: Tuple.DEFAULT.expire
+        };
+      }
+      if (!Tuple.isHash(tuple2) && !(tuple2 instanceof Tuple)) {
+        return;
+      }
+      if (!Tuple.isHash(tuple1) && !(tuple1 instanceof Tuple)) {
+        return;
+      }
+      if (!(tuple2 instanceof Tuple)) {
+        tuple2 = new Tuple(tuple2);
+      }
+      if (!(tuple1 instanceof Tuple)) {
+        tuple1 = new Tuple(tuple1);
+      }
+      tuple2.expire = typeof options.expire === 'number' && options.expire > 0 ? options.expire : Tuple.DEFAULT.expire;
+      tuple2.from = options.from;
+      called = [];
+      taked = false;
+      for (i = j = 0, ref = this.callbacks.length; 0 <= ref ? j < ref : j > ref; i = 0 <= ref ? ++j : --j) {
+        c = this.callbacks[i];
+        if (c.tuple.match(tuple2)) {
+          if (c.type === 'take' || c.type === 'read') {
+            called.push(i);
+          }
+          (function(c) {
+            return setImmediate(function() {
+              return c.callback(null, tuple2);
+            });
+          })(c);
+          if (c.type === 'take') {
+            taked = true;
+            break;
+          }
+        }
+      }
+      for (l = called.length - 1; l >= 0; l += -1) {
+        i = called[l];
+        this.callbacks.splice(i, 1);
+      }
+      for (i = m = 0, ref1 = this.tuples.length; 0 <= ref1 ? m < ref1 : m > ref1; i = 0 <= ref1 ? ++m : --m) {
+        if (tuple1.match(this.tuples[i])) {
+          this.tuples.splice(i, 1);
+          break;
+        }
+      }
+      if (!taked) {
+        return this.tuples.push(tuple2);
+      }
+    };
+
     TupleSpace.prototype.create_callback_id = function() {
       return Date.now() - Math.random();
     };
