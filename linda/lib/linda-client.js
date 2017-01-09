@@ -78,12 +78,20 @@
       return this.option({}).takep(tuple, callback);
     };
 
+    TupleSpace.prototype.takeAll = function(tuple, callback) {
+      return this.option({}).takeAll(tuple, callback);
+    };
+
     TupleSpace.prototype.read = function(tuple, callback) {
       return this.option({}).read(tuple, callback);
     };
 
     TupleSpace.prototype.readp = function(tuple, callback) {
       return this.option({}).readp(tuple, callback);
+    };
+
+    TupleSpace.prototype.readAll = function(tuple, callback) {
+      return this.option({}).readAll(tuple, callback);
     };
 
     TupleSpace.prototype.watch = function(tuple, callback) {
@@ -205,6 +213,30 @@
       return id;
     };
 
+    ReadTakeOption.prototype.readAll = function(tuple, callback) {
+      var id, listener, name;
+      if (typeof callback !== 'function') {
+        return;
+      }
+      id = this.ts.create_callback_id();
+      name = "__linda_readAll_" + id;
+      listener = function(err, tuple) {
+        return callback(err, tuple);
+      };
+      this.ts.io_callbacks.push({
+        name: name,
+        listener: listener
+      });
+      this.ts.linda.io.once(name, listener);
+      this.ts.linda.io.emit('__linda_readAll', {
+        tuplespace: this.ts.name,
+        tuple: tuple,
+        id: id,
+        options: this.opts
+      });
+      return id;
+    };
+
     ReadTakeOption.prototype.take = function(tuple, callback) {
       var id, listener, name;
       if (typeof callback !== 'function') {
@@ -245,6 +277,30 @@
       });
       this.ts.linda.io.once(name, listener);
       this.ts.linda.io.emit('__linda_takep', {
+        tuplespace: this.ts.name,
+        tuple: tuple,
+        id: id,
+        options: this.opts
+      });
+      return id;
+    };
+
+    ReadTakeOption.prototype.takeAll = function(tuple, callback) {
+      var id, listener, name;
+      if (typeof callback !== 'function') {
+        return;
+      }
+      id = this.ts.create_callback_id();
+      name = "__linda_takeAll_" + id;
+      listener = function(err, tuple) {
+        return callback(err, tuple);
+      };
+      this.ts.io_callbacks.push({
+        name: name,
+        listener: listener
+      });
+      this.ts.linda.io.once(name, listener);
+      this.ts.linda.io.emit('__linda_takeAll', {
         tuplespace: this.ts.name,
         tuple: tuple,
         id: id,
