@@ -75,7 +75,19 @@
       return this.option({}).readp(tuple, callback);
     };
 
+    TupleSpace.prototype.readAll = function(tuple, callback) {
+      return this.option({}).readAll(tuple, callback);
+    };
+
     TupleSpace.prototype.take = function(tuple, callback) {
+      return this.option({}).take(tuple, callback);
+    };
+
+    TupleSpace.prototype.takep = function(tuple, callback) {
+      return this.option({}).takep(tuple, callback);
+    };
+
+    TupleSpace.prototype.takeAll = function(tuple, callback) {
       return this.option({}).take(tuple, callback);
     };
 
@@ -255,6 +267,50 @@
       });
     };
 
+    ReadTakeOption.prototype.readAll = function(tuple, callback) {
+      var i, j, len, seq, t, tupList;
+      if (typeof callback !== 'function') {
+        return;
+      }
+      if (!Tuple.isHash(tuple) && !(tuple instanceof Tuple)) {
+        setImmediate(function() {
+          return callback('argument_error');
+        });
+        return null;
+      }
+      if (!(tuple instanceof Tuple)) {
+        tuple = new Tuple(tuple);
+      }
+      seq = (function() {
+        var j, l, ref, ref1, results, results1;
+        switch (this.opts.sort) {
+          case 'queue':
+            return (function() {
+              results = [];
+              for (var j = 0, ref = this.ts.size - 1; 0 <= ref ? j <= ref : j >= ref; 0 <= ref ? j++ : j--){ results.push(j); }
+              return results;
+            }).apply(this);
+          case 'stack':
+            return (function() {
+              results1 = [];
+              for (var l = ref1 = this.ts.size - 1; ref1 <= 0 ? l <= 0 : l >= 0; ref1 <= 0 ? l++ : l--){ results1.push(l); }
+              return results1;
+            }).apply(this);
+        }
+      }).call(this);
+      tupList = [];
+      for (j = 0, len = seq.length; j < len; j++) {
+        i = seq[j];
+        t = this.ts.tuples[i];
+        if (tuple.match(t)) {
+          tupList.push(t);
+        }
+      }
+      setImmediate(function() {
+        return callback(null, tupList);
+      });
+    };
+
     ReadTakeOption.prototype.take = function(tuple, callback) {
       var i, id, j, len, seq, t;
       if (typeof callback !== 'function') {
@@ -351,6 +407,51 @@
       }
       setImmediate(function() {
         return callback("tuple does not exist", null);
+      });
+    };
+
+    ReadTakeOption.prototype.takeAll = function(tuple, callback) {
+      var i, j, len, seq, t, tupList;
+      if (typeof callback !== 'function') {
+        return;
+      }
+      if (!Tuple.isHash(tuple) && !(tuple instanceof Tuple)) {
+        setImmediate(function() {
+          return callback('argument_error');
+        });
+        return null;
+      }
+      if (!(tuple instanceof Tuple)) {
+        tuple = new Tuple(tuple);
+      }
+      seq = (function() {
+        var j, l, ref, ref1, results, results1;
+        switch (this.opts.sort) {
+          case 'queue':
+            return (function() {
+              results = [];
+              for (var j = 0, ref = this.ts.size - 1; 0 <= ref ? j <= ref : j >= ref; 0 <= ref ? j++ : j--){ results.push(j); }
+              return results;
+            }).apply(this);
+          case 'stack':
+            return (function() {
+              results1 = [];
+              for (var l = ref1 = this.ts.size - 1; ref1 <= 0 ? l <= 0 : l >= 0; ref1 <= 0 ? l++ : l--){ results1.push(l); }
+              return results1;
+            }).apply(this);
+        }
+      }).call(this);
+      tupList = [];
+      for (j = 0, len = seq.length; j < len; j++) {
+        i = seq[j];
+        t = this.ts.tuples[i];
+        if (tuple.match(t)) {
+          tupList.push(t);
+          this.ts.tuples.splice(i, 1);
+        }
+      }
+      setImmediate(function() {
+        return callback(null, tupList);
       });
     };
 

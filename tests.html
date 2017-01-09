@@ -16,7 +16,7 @@
       /*
       Når i laver tests, skal i bruge print1() til at printe hvad testen handler om,
       og den skal hedde "test [X]:" hvor X er nummeret i rækefølgen.
-      
+
       print() bruges på samme måde, men til resultatet af testen.
       */
       var server_url = "http://localhost:3000";
@@ -42,10 +42,9 @@
 
       var socket = io.connect(server_url);
       var linda = new Linda().connect(socket);
-      var ts = linda.tuplespace("chatroom1");
+      var ts = linda.tuplespace("test");
       print1("Test 1: Connect to server:")
       linda.io.on("connect", function(){
-        console.log("hej")
         print("Test 1: success, connected to server: " + server_url + "/chatroom1");
 
       });
@@ -145,8 +144,42 @@
         };
       })
 
+      print1("Test 10: Trying to readAll on 5 matches")
+      var sum = 0
+      for (var i = 0; i < 5; i++) {
+        ts.write({test: "test10", index: i})
+        sum += i
+      }
+      ts.readAll({test:"test10"}, function(err, tuple){
+        var sum1 = 0
+        for (var i = 0; i < tuple.length; i++) {
+          sum1 += tuple[i].data.index
+        }
+        if(sum === sum){
+          print("Test 10: success")
+        }else{
+          print("Test 10: FAIL!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
+        }
+      })
 
-
+      print1("Test 11: Trying to takeAll on 5 matches")
+      ts.takeAll({test:"test10"}, function(err, tuple){
+        var sum1 = 0
+        for (var i = 0; i < tuple.length; i++) {
+          sum1 += tuple[i].data.index
+        }
+        if(sum1 === sum){
+          ts.takep({test:"test10"},function(err1, tuple1 ){
+            if (tuple1 == null) {
+              print("Test 11: success")
+            } else {
+              print("Test 11: FAIL, tuple was still there")
+            }
+          })
+        }else{
+          print("Test 11: FAIL!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
+        }
+      })
 
 
       setTimeout(function(){

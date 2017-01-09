@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "dev": "nodemon index.js",
+    "dev": "coffee -o linda/lib/ -c linda/src/ && nodemon index.js",
     "postinstall": "(cd ./linda && npm install)"
   },
   "author": "",

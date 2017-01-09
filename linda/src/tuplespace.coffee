@@ -44,7 +44,16 @@ module.exports = class TupleSpace
   readp: (tuple, callback) ->
     return @option({}).readp tuple, callback
 
+  readAll: (tuple, callback) ->
+    return @option({}).readAll tuple, callback
+
   take: (tuple, callback) ->
+    return @option({}).take tuple, callback
+
+  takep: (tuple, callback) ->
+    return @option({}).takep tuple, callback
+
+  takeAll: (tuple, callback) ->
     return @option({}).take tuple, callback
 
   watch: (tuple, callback) ->
@@ -124,6 +133,23 @@ class ReadTakeOption
     setImmediate -> callback("tuple does not exist", null)
     return
 
+  readAll: (tuple, callback) ->
+    return unless typeof callback is 'function'
+    if !Tuple.isHash(tuple) and !(tuple instanceof Tuple)
+      setImmediate -> callback('argument_error')
+      return null
+    tuple = new Tuple(tuple) unless tuple instanceof Tuple
+    seq = switch @opts.sort
+      when 'queue' then [0..@ts.size-1]
+      when 'stack' then [@ts.size-1..0]
+    tupList = []
+    for i in seq
+      t = @ts.tuples[i]
+      if tuple.match t
+        tupList.push t
+    setImmediate -> callback(null, tupList)
+    return
+
   take: (tuple, callback) ->
     return unless typeof callback is 'function'
     if !Tuple.isHash(tuple) and !(tuple instanceof Tuple)
@@ -159,4 +185,22 @@ class ReadTakeOption
         @ts.tuples.splice i, 1  # delete tuple
         return
     setImmediate -> callback("tuple does not exist", null)
+    return
+
+  takeAll: (tuple, callback) ->
+    return unless typeof callback is 'function'
+    if !Tuple.isHash(tuple) and !(tuple instanceof Tuple)
+      setImmediate -> callback('argument_error')
+      return null
+    tuple = new Tuple(tuple) unless tuple instanceof Tuple
+    seq = switch @opts.sort
+      when 'queue' then [0..@ts.size-1]
+      when 'stack' then [@ts.size-1..0]
+    tupList = []
+    for i in seq
+      t = @ts.tuples[i]
+      if tuple.match t
+        tupList.push t
+        @ts.tuples.splice i, 1  # delete tuple
+    setImmediate -> callback(null, tupList)
     return

@@ -133,6 +133,21 @@
               }
             });
           });
+          socket.on('__linda_takeAll', function(data) {
+            var cid;
+            cid = _this.tuplespace(data.tuplespace).option(data.options).takeAll(data.tuple, function(err, tuple) {
+              cid = null;
+              return socket.emit("__linda_takeAll_" + data.id, err, tuple);
+            });
+            cids[data.id] = cid;
+            debug("takeAll\t" + (JSON.stringify(data)) + " from " + info.from);
+            _this.emit('takeAll', data);
+            return socket.once('disconnect', function() {
+              if (cid) {
+                return _this.tuplespace(data.tuplespace).cancel(cid);
+              }
+            });
+          });
           socket.on('__linda_takep', function(data) {
             var cid;
             cid = _this.tuplespace(data.tuplespace).option(data.options).takep(data.tuple, function(err, tuple) {
@@ -157,6 +172,21 @@
             cids[data.id] = cid;
             debug("read\t" + (JSON.stringify(data)) + " from " + info.from);
             _this.emit('read', data);
+            return socket.once('disconnect', function() {
+              if (cid) {
+                return _this.tuplespace(data.tuplespace).cancel(cid);
+              }
+            });
+          });
+          socket.on('__linda_readAll', function(data) {
+            var cid;
+            cid = _this.tuplespace(data.tuplespace).option(data.options).readAll(data.tuple, function(err, tuple) {
+              cid = null;
+              return socket.emit("__linda_readAll_" + data.id, err, tuple);
+            });
+            cids[data.id] = cid;
+            debug("readAll\t" + (JSON.stringify(data)) + " from " + info.from);
+            _this.emit('readAll', data);
             return socket.once('disconnect', function() {
               if (cid) {
                 return _this.tuplespace(data.tuplespace).cancel(cid);
