@@ -104,7 +104,11 @@
         print(activity + " starting in " + time + " seconds");
         (function myLoop (i) {
            setTimeout(function () {
-              print(activity + " starting in " + i + " seconds");
+              if (i === 0) {
+                print(activity + " starting...");
+              } else {
+                print(activity + " starting in " + i + " seconds");
+              }
               if (i--) myLoop(i);
            }, 1000)
         })(--time);
@@ -112,7 +116,9 @@
 
       $(function() {
         $('.activity').click(function(e){
-          hosts.takeroom({room: room.name});
+          hosts.take({room: room.name}, function (err, tuple) {
+            console.log('locked ' tuple.data.room);
+          });
           var target = $(e.target);
           room.write({type: 'activity', activity: target.data('name')});
         });
