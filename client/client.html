@@ -17,6 +17,7 @@
     <h1>PantherPoint Client</h1>
     <p>Indtast password for at connecte til skærmen:</p>
     <input class="input-lg" type="text" value="" id="tekstfelt"><br><br>
+    <p id="err_msg" style="color:red;"> <p>
     <p>Indtast dit navn:</p>
     <input class="input-sm" type="text" value="" id="navnefelt"><br><br>
     <input class="btn btn-primary" type="button" value="Connect" id="btn_connect">
@@ -25,47 +26,54 @@
     <div id="log"></div>
 </div>
 
-    
+
 <script src="/socket.io/socket.io.js"></script>
 <script src="/linda/linda.js"></script>
-<script src="/jquery/jquery.js"></script>    
+<script src="/jquery/jquery.js"></script>
 <script>
   var server_url = "http://localhost:3000";
 
   var print = function(msg){
     $("#log").prepend( $("<p>").text(msg) );
-  };    
-    
-    var socket = io.connect(server_url);
+  };
 
-/*
+  var socket = io.connect(server_url);
+  var linda = new Linda().connect(socket);
+  var main
+
   linda.io.on("connect", function(){
-    print("connected to distributing server " + server_url + "/main");
-
+    console.log("connected to distributing server " + server_url + "/main");
+    main = linda.tuplespace("hosts")
     // receive chat messages
-    ts.watch({type: "player"}, function(err, tuple){
+    /*ts.watch({type: "player"}, function(err, tuple){
       print("> " + tuple.data.message + "(from:" + tuple.from + ")");
-    });
+    });*/
   });
-*/
+
   // on page load
   jQuery(function(){
 
     $("#btn_connect").click(function(){
-        name = $("#navnefelt").val();
-        room = $("#tekstfelt").val();
-        var linda = new Linda().connect(socket);
-        var ts = linda.tuplespace(room);
-        
-        ts.write({type: "player", name: name});
-      });
-      
-    /*  
-      
+      name = $("#navnefelt").val();
+      room = $("#tekstfelt").val();
+      main.readp({type: 'room', room: room}, function(err, tuple){
+        if(tuple == null){
+          $("#err_msg").html("Error: Room does not exist")
+        } else {
+          var ts = linda.tuplespace(room);
+
+          ts.write({type: "player", name: name});
+        }
+
+      })
+    });
+
+    /*
+
     // send chat message
     $("#btn_connect").click(function(){
       var msg = $("#tekstfelt").val();
-        
+
       });
           ts.readp({type: "player", message: msg}, function(err, tuple){
             if(tuple == null){
@@ -75,20 +83,20 @@
                 var name = $("#navnefelt").val();
                 var room = $("#tekstfelt").val();
                 var ts = linda.tuplespace(room);
-                ts.write({type: "player", name: name}); 
+                ts.write({type: "player", name: name});
             } else {
-               print("Password does not exist"); 
+               print("Password does not exist");
             }
           });
         });
-        
-*/
+
+    */
     $("#btn_add").click(function(){
       var msg = $("#tekstfelt").val();
       ts.write({type: "player", name: msg});
         console.log("Added to tuplespace: " + msg)
     });
-    });
+  });
 
 </script>
 
