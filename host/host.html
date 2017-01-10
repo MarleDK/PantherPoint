@@ -58,6 +58,7 @@
         $('.code').text(room.name);
         hosts.write({type: 'nextRoom', room: room.name});
         hosts.write({type: 'room', room: room.name});
+        room.write({type:"hostActive"});
         room.watch({type: 'player'}, function (err, tuple) {
           print(tuple.data.name + " connected");
         });
@@ -117,7 +118,7 @@
       $(function() {
         $('.activity').click(function(e){
           hosts.take({room: room.name}, function (err, tuple) {
-            console.log('locked ' tuple.data.room);
+            console.log('locked ' + tuple.data.room);
           });
           var target = $(e.target);
           room.write({type: 'activity', activity: target.data('name')});
