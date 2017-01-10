@@ -9,3 +9,14 @@
   font-size: 8vh;
   font-weight: bold;
 }
+
+.btn-big{
+  padding-top:5vh;
+  padding-bottom:5vh;
+  padding-left: 10vw;
+  padding-right: 10vw;
+
+  /*Text in button style: */
+  font-size: 5vh;
+  font-weight: bold;
+}

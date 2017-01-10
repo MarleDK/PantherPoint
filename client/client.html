@@ -56,6 +56,15 @@
   </div>
 </div>
 
+<div class ="text-center" id="snake" style="display:none">
+  <div class="btn-group btn-lg">
+    <button id="left" type="button" class="btn btn-prmiary btn-big"> L </button>
+    <button id="right" type="button" class="btn btn-prmiary btn-big"> R </button>
+
+  </div>
+</div>
+
+
 
 <script src="/socket.io/socket.io.js"></script>
 <script src="/linda/linda.js"></script>
@@ -99,7 +108,7 @@
 
     //Denne function sender en ny tuple, med
     var keepAlive = setInterval(function(){
-      ts.write({type: "player", name: name});
+      ts.replace({type: "player", name: name},{type: "player", name: name});
     },60*1000*3);
 
     //Denne del sletter watch functioner, så de ikke kører mere, hvis host'en ikke er connected til tuple-spacet mere
