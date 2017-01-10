@@ -118,6 +118,15 @@
             debug("write\t" + (JSON.stringify(data)) + " from " + info.from);
             return _this.emit('write', data);
           });
+          socket.on('__linda_replace', function(data) {
+            var ref1;
+            if ((ref1 = data.options) != null) {
+              ref1.from = info.from;
+            }
+            _this.tuplespace(data.tuplespace).replace(data.tuple1, data.tuple2, data.options);
+            debug("replace\t" + (JSON.stringify(data)) + " from " + info.from);
+            return _this.emit('replace', data);
+          });
           socket.on('__linda_take', function(data) {
             var cid;
             cid = _this.tuplespace(data.tuplespace).option(data.options).take(data.tuple, function(err, tuple) {

@@ -70,6 +70,22 @@
       return this.linda.io.emit('__linda_write', data);
     };
 
+    TupleSpace.prototype.replace = function(tuple1, tuple2, options) {
+      var data;
+      if (options == null) {
+        options = {
+          expire: null
+        };
+      }
+      data = {
+        tuplespace: this.name,
+        tuple1: tuple1,
+        tuple2: tuple2,
+        options: options
+      };
+      return this.linda.io.emit('__linda_replace', data);
+    };
+
     TupleSpace.prototype.take = function(tuple, callback) {
       return this.option({}).take(tuple, callback);
     };

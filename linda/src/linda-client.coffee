@@ -35,6 +35,10 @@ class TupleSpace
     data = { tuplespace: @name, tuple: tuple, options: options }
     @linda.io.emit '__linda_write', data
 
+  replace: (tuple1, tuple2, options={expire: null}) ->
+    data = { tuplespace: @name, tuple1: tuple1 ,tuple2: tuple2, options: options }
+    @linda.io.emit '__linda_replace', data
+
   take: (tuple, callback) ->
     return @option({}).take tuple, callback
 
