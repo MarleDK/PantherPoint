@@ -103,7 +103,7 @@
     //Denne function sender en ny tuple, med
     var keepAlive = setInterval(function(){
       ts.replace({type: "player", name: name},{type: "player", name: name});
-    },60*1000*3);
+    },timeToKeepAlive);
 
     //Denne del sletter watch functioner, så de ikke kører mere, hvis host'en ikke er connected til tuple-spacet mere
     //Og sletter setInterval's
@@ -115,7 +115,7 @@
           clearInterval(checkHostAlive)
         }
       });
-    },60*1000*3);
+    },timeToKeepAlive);
   }
 
   // on page load

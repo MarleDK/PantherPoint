@@ -7,6 +7,7 @@ var http = require('http').Server(app)
 var io = require('socket.io')(http)
 var linda = require(path.resolve(__dirname, 'linda')).Server.listen({ io: io, server: http})
 var jQuery = require('jquery')
+const timeToKeepAlive = 60*1000*3;
 
 var hosts = linda.tuplespace('hosts');
 hosts.write({type: 'nextRoom', room: 'a1k4'});
@@ -15,7 +16,7 @@ var updateNextRoom = function(){
     hosts.write({type: 'nextRoom', room: tuple.data.room})
   })
 }
-setInterval(updateNextRoom, 1000*60*3)
+setInterval(updateNextRoom, timeToKeepAlive)
 
 app.engine('html', exphbs());
 app.set('view engine', 'handlebars')
