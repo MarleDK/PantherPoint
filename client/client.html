@@ -71,7 +71,7 @@
 <script src="/jquery/jquery.js"></script>
 <script>
   var server_url = "http://localhost:3000";
-  listOfViews = ["login","none","snake","chat"]
+  listOfViews = ["none","login","snake","chat"]
 
   var print = function(msg){
     $("#log").prepend( $("<p>").text(msg) );
@@ -89,8 +89,8 @@
   var updateView = function (activity) {
     listOfViews.forEach(function (view) {
       if(view == activity){
-        $("#"+view).fadeIn();
         setTimeout(function() {
+            $("#"+view).fadeIn();
             $("#"+view).show();
         }, 400);
       } else {
@@ -141,9 +141,11 @@
           room.write({type: "player", name: name});
           $("#host_name").html("Connected to: "+code)
           $("#login").fadeOut();
+            /*
           setTimeout(function() {
           $("#login").hide()
           }, 400);
+          */
           room.read({type:"activity"}, function(err1, tuple1){
             updateView(tuple1.data.activity)
 
