@@ -30,6 +30,10 @@ app.get('/client', function (req, res) {
   res.sendFile(path.join(__dirname + '/client/client.html'))
 })
 
+app.get('/snake', function (req, res) {
+  res.sendFile(path.join(__dirname + '/client/snake.html'))
+})
+
 // Host
 app.get('/host', function (req, res) {
   res.sendFile(path.join(__dirname + '/host/host.html'))
