@@ -11,12 +11,12 @@ const timeToKeepAlive = 60*1000*3;
 
 var hosts = linda.tuplespace('hosts');
 hosts.write({type: 'nextRoom', room: 'a1k4'});
-var updateNextRoom = function(){
+var NextRoomeKeepAlive = function(){
   hosts.take({type: 'nextRoom'}, function(err, tuple){
     hosts.write({type: 'nextRoom', room: tuple.data.room})
   })
 }
-setInterval(updateNextRoom, timeToKeepAlive)
+setInterval(NextRoomeKeepAlive, timeToKeepAlive)
 
 app.engine('html', exphbs());
 app.set('view engine', 'handlebars')

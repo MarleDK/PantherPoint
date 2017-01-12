@@ -44,6 +44,7 @@
       var hosts = linda.tuplespace('hosts');
       var room;
       const timeToKeepAlive = 60*1000*3;
+      var hostRoomKeepAliveID;
 
 
       hosts.linda.io.on('connect', function () {
@@ -56,17 +57,7 @@
         });
       });
 
-      var updateView = function (activity) {
-        listOfViews.forEach(function (view) {
-          if(view == activity){
-            $("#"+view).show();
-          } else {
-            $("#"+view).hide();
-          }
-        })
-      }
-
-      var keepAlive = function(){
+      var hostRoomKeepAlive = function(){
         return setInterval(function(){
           hosts.replace({type: 'room', room: room.name},{type: 'room', room: room.name})
         }, timeToKeepAlive)
@@ -81,12 +72,14 @@
         });
 
         room.watch({type: 'activity'}, function (err, tuple) {
-          updateView(tuple.data.activity)
+          //updateView(tuple.data.activity)
         });
 
         setInterval(function(){
           room.replace({type:"hostActive"},{type:"hostActive"})
         },timeToKeepAlive)
+        
+        hostRoomKeepAliveID = hostRoomKeepAlive();
 
       }
 
