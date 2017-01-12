@@ -3,7 +3,6 @@
 <title>PantherPoint Client</title>
 <link href="https://fonts.googleapis.com/css?family=Open+Sans" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/css/bootstrap.min.css" />
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.1.1/jquery.min.js" />
 <link rel="stylesheet" href="/index.css" />
 </head>
 <nav class="navbar navbar-inverse navbar-fixed-top">
@@ -15,6 +14,7 @@
         </ul>
     </div>
     <div id="navbar" class="navbar-collapse collapse">
+        <button type="button" class="btn btn-danger navbar-btn" id="btn_logout" style="display:none"><span class="glyphicon glyphicon-log-out"></span> Log out</button>
     </div><!--/.nav-collapse -->
   </div>
 </nav>
@@ -38,26 +38,21 @@
   <h1 id="host_name"> </h1>
   <div class="btn-group-vertical btn-lg">
     <button id="btn_chat" type="button" class="btn btn-primary btn-big"> Chat </button>
-    <button id="btn_snakes" type="button" class="btn btn-primary btn-big"> Snake </button>
+    <button id="btn_snake" type="button" class="btn btn-primary btn-big"> Snake </button>
   </div>
 </div>
 
 <div class ="text-center" id="snake" style="display:none">
-  <div class="btn-group btn-lg">
-    <button id="left" type="button" class="btn btn-primary btn-big"> L </button>
-    <button id="right" type="button" class="btn btn-primary btn-big"> R </button>
 
-  </div>
 </div>
-
-
 
 <script src="/socket.io/socket.io.js"></script>
 <script src="/linda/linda.js"></script>
 <script src="/jquery/jquery.js"></script>
 <script>
   var server_url = "http://localhost:3000";
-  listOfViews = ["none","login","snake","chat"]
+  listOfViews = ["login","none","snake","chat"]
+  const timeToKeepAlive = 1000*60*3
 
   var print = function(msg){
     $("#log").prepend( $("<p>").text(msg) );
@@ -87,23 +82,25 @@
         setTimeout(function() {
             $("#"+view).hide()
         }, 400);
-        
+
       }
     })
   }
 
-  var startWatchHost = function (ts, name) {
+  function startWatchHost(ts, name) {
     var actWatch = ts.watch({type:"activity"},function(err,tuple){
       updateView(tuple.data.activity)
     });
 
-    //Denne function sender en ny tuple, med
+
+    //Denne function replacer spilleren's tuple i tuple-spacet, så den ikke udløber
     var keepAlive = setInterval(function(){
       ts.replace({type: "player", name: name},{type: "player", name: name});
     },timeToKeepAlive);
 
     //Denne del sletter watch functioner, så de ikke kører mere, hvis host'en ikke er connected til tuple-spacet mere
     //Og sletter setInterval's
+
     var chekcHostAlive = setInterval(function(){
       ts.readp({type:"hostActive"}, function(err, tuple){
         if(tuple == null){
@@ -113,12 +110,16 @@
         }
       });
     },timeToKeepAlive);
+
   }
+
+  $("#snake").load( "/snake #game" );
 
   // on page load
   $(function(){
 
     $("#btn_connect").click(function(){
+      $("#err_msg").html("")
       name = $("#navnefelt").val();
       code = $("#tekstfelt").val();
       main.readp({type: 'room', room: code}, function(err, tuple){
@@ -130,12 +131,13 @@
                 if(tuple2 !== null){
                     $("#err_msg").html("Error: Player name is already in room")
                 } else {
-                    room.write({type: "player", name: name});
-                    $("#btn_logout").show();
-                    $("#host_name").html("Connected to: "+code)
-                    room.read({type:"activity"}, function(err1, tuple1){
-                        updateView(tuple1.data.activity)
-                    })
+                  startWatchHost(room, name);
+                  room.write({type: "player", name: name});
+                  $("#btn_logout").show();
+                  $("#host_name").html("Connected to: "+code)
+                  room.read({type:"activity"}, function(err1, tuple1){
+                      updateView(tuple1.data.activity)
+                  })
                 }
             })
           }
@@ -149,6 +151,15 @@
         $("#btn_logout").hide();
     })
     
+    $("#btn_snake").click(function(){
+      room.takep({type:"activity"},function(err, tuple){
+        console.log("Snake clicked")
+        if(tuple !== null){
+          room.write({type:"activity",activity:"snake"})
+        }
+      })
+    })
+
     $(document).keypress(function(e) {
       if(e.which == 13) {
         $("#btn_connect").click()
