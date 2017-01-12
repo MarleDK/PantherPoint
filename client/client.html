@@ -9,16 +9,11 @@
 <nav class="navbar navbar-inverse navbar-fixed-top">
   <div class="container">
     <div class="navbar-header">
-      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
-        <span class="sr-only">Toggle navigation</span>
-        <span class="icon-bar"></span>
-        <span class="icon-bar"></span>
-        <span class="icon-bar"></span>
-      </button>
       <a class="navbar-brand" href="#">Client</a>
     </div>
     <div id="navbar" class="navbar-collapse collapse">
       <ul class="nav navbar-nav">
+          
         <li class="dropdown">
           <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="true">Menu <span class="caret"></span></a>
           <ul class="dropdown-menu">
@@ -27,8 +22,7 @@
           </ul>
         </li>
       </ul>
-      <ul class="nav navbar-nav navbar-right">
-      </ul>
+        <button class="btn btn-danger navbar-btn navbar-right"> Log out</button>
     </div><!--/.nav-collapse -->
   </div>
 </nav>
@@ -42,7 +36,7 @@
     <p id="err_msg" style="color:red;"> <p>
     <p>Indtast dit navn:</p>
     <input class="input-sm" type="text" value="" id="navnefelt"><br><br>
-    <input class="btn btn-primary" type="button" value="Connect" id="btn_connect">
+    <input class="btn btn-primary glyphicon glyphicon-log-in" type="button" value="Connect" id="btn_connect">
     <br>
     <div id="log"></div>
 </div>
@@ -137,16 +131,19 @@
           $("#err_msg").html("Error: Room does not exist")
         } else {
           var room = linda.tuplespace(code);
-
-          room.write({type: "player", name: name});
-          $("#host_name").html("Connected to: "+code)
-          $("#login").fadeOut();
-          room.read({type:"activity"}, function(err1, tuple1){
-            updateView(tuple1.data.activity)
-
-          })
-        }
-      })
+            room.readp({type: 'player', name: name}, function(err2, tuple2){
+                if(tuple2 !== null){
+                    $("#err_msg").html("Error: Player name is already in room")
+                } else {
+                    room.write({type: "player", name: name});
+                    $("#host_name").html("Connected to: "+code)
+                    room.read({type:"activity"}, function(err1, tuple1){
+                        updateView(tuple1.data.activity)
+                    })
+                }
+            })
+          }
+        })
     });
 
     $(document).keypress(function(e) {
