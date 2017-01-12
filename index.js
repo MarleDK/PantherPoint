@@ -10,7 +10,12 @@ var jQuery = require('jquery')
 
 var hosts = linda.tuplespace('hosts');
 hosts.write({type: 'nextRoom', room: 'a1k4'});
-
+var updateNextRoom = function(){
+  hosts.take({type: 'nextRoom'}, function(err, tuple){
+    hosts.write({type: 'nextRoom', room: tuple.data.room})
+  })
+}
+setInterval(updateNextRoom, 1000*60*3)
 
 app.engine('html', exphbs());
 app.set('view engine', 'handlebars')

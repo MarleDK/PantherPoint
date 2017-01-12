@@ -47,18 +47,18 @@
 </div>
 
 <!-- This view is shown, when the user is connected to a host -->
-<div class="text-center" id="choose_activity" style="display:none">
+<div class="text-center" id="none" style="display:none">
   <h1 id="host_name"> </h1>
   <div class="btn-group-vertical btn-lg">
-    <button id="chat" type="button" class="btn btn-primary btn-big"> chat </button>
-    <button id="snake" type="button" class="btn btn-primary btn-big"> snake </button>
+    <button id="btn_chat" type="button" class="btn btn-primary btn-big"> Chat </button>
+    <button id="btn_snakes" type="button" class="btn btn-primary btn-big"> Snake </button>
   </div>
 </div>
 
 <div class ="text-center" id="snake" style="display:none">
   <div class="btn-group btn-lg">
-    <button id="left" type="button" class="btn btn-prmiary btn-big"> L </button>
-    <button id="right" type="button" class="btn btn-prmiary btn-big"> R </button>
+    <button id="left" type="button" class="btn btn-primary btn-big"> L </button>
+    <button id="right" type="button" class="btn btn-primary btn-big"> R </button>
 
   </div>
 </div>
@@ -70,7 +70,7 @@
 <script src="/jquery/jquery.js"></script>
 <script>
   var server_url = "http://localhost:3000";
-  listOfViews = ["login","choose_activity","snake","chat"]
+  listOfViews = ["login","none","snake","chat"]
 
   var print = function(msg){
     $("#log").prepend( $("<p>").text(msg) );
