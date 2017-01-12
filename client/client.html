@@ -141,11 +141,6 @@
           room.write({type: "player", name: name});
           $("#host_name").html("Connected to: "+code)
           $("#login").fadeOut();
-            /*
-          setTimeout(function() {
-          $("#login").hide()
-          }, 400);
-          */
           room.read({type:"activity"}, function(err1, tuple1){
             updateView(tuple1.data.activity)
 
