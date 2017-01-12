@@ -2,6 +2,23 @@
   <head>
     <title>Host</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/css/bootstrap.min.css" />
+    <style>
+      #game {
+        height: 100vh;
+        width: 100vw;
+        box-sizing: border-box;
+        border: 2px solid red;
+        position: fixed;
+        background: white;
+        z-index: 9999;
+        top: 0;
+        left: 0;
+      }
+      canvas {
+        width: 100%;
+        height: 100%;
+      }
+    </style>
   </head>
   <nav class="navbar navbar-inverse navbar-fixed-top">
     <div class="container">
@@ -33,6 +50,12 @@
     <h1>Host</h1>
     <h2 class="code" style="color: red; border-bottom: 2px solid red; padding-bottom: 5px"></h2>
     <div id="log" style="height: 300px; overflow-y: scroll; overflow-x: hidden;"></div>
+
+    <div id="game" style="display: block;">
+      <canvas>
+        
+      </canvas>
+    </div>
     <script src="/socket.io/socket.io.js"></script>
     <script src="/linda/linda.js"></script>
     <script src="/jquery/jquery.js"></script>
@@ -59,7 +82,7 @@
         hosts.write({type: 'nextRoom', room: room.name});
         hosts.write({type: 'room', room: room.name});
         room.write({type:"hostActive"});
-        room.watch({type: 'player'}, function (err, tuple) {
+        room.watch({type: 'player'}, function(err, tuple) {
           print(tuple.data.name + " connected");
         });
         room.watch({type: 'activity'}, function (err, tuple) {
@@ -107,6 +130,9 @@
            setTimeout(function () {
               if (i === 0) {
                 print(activity + " starting...");
+                setTimeout(function(){
+                  $('#game').slideDown();
+                }, 600);
               } else {
                 print(activity + " starting in " + i + " seconds");
               }
@@ -123,6 +149,92 @@
           var target = $(e.target);
           room.write({type: 'activity', activity: target.data('name')});
         });
+      });
+
+      $(function() {
+        var canvas = $('canvas')[0];
+        var ctx = canvas.getContext("2d");
+        var width = $("canvas").width();
+        var height = $("canvas").height();
+
+        var cellWidth = 2;
+        var direction;
+        var food;
+        var score;
+        var snake_array;
+
+        function init()
+        {
+          d = "right";
+          create_snake();
+          score = 0;
+          if(typeof game_loop != "undefined") clearInterval(game_loop);
+
+          game_loop = setInterval(paint, 60);
+        }
+
+        init();
+
+        function create_snake()
+        {
+          var length = 5;
+          snake_array = []; //Empty array to start with
+          for(var i = length-1; i>=0; i--)
+          {
+            snake_array.push({x: i, y:0});
+          }
+        }
+
+        function paint()
+        {
+          ctx.fillStyle = "#BADA55";
+          ctx.fillRect(0, 0, width, height);
+
+          var nx = snake_array[0].x;
+          var ny = snake_array[0].y;
+
+          if(d == "right") nx++;
+          else if(d == "left") nx--;
+          else if(d == "up") ny--;
+          else if(d == "down") ny++;
+
+          if(nx == -1 || nx == Math.ceil(width/cellWidth) || ny == -1 || ny == Math.ceil(height/cellWidth) || check_collision(nx, ny, snake_array))
+          {
+            init();
+            return;
+          }
+
+          var tail = snake_array.pop();
+          tail.x = nx; tail.y = ny;
+
+          snake_array.unshift(tail);
+
+          for(var i = 0; i < snake_array.length; i++)
+          {
+            var c = snake_array[i];
+            //Lets paint 10px wide cells
+            paint_cell(c.x, c.y);
+          }
+        }
+
+        function paint_cell(x, y)
+        {
+          ctx.fillStyle = "blue";
+          ctx.fillRect(x*cellWidth, y*cellWidth, cellWidth, cellWidth);
+          ctx.strokeStyle = "white";
+          ctx.strokeRect(x*cellWidth, y*cellWidth, cellWidth, cellWidth);
+        }
+
+        function check_collision(x, y, array)
+        {
+          console.log('checked collision');
+          for(var i = 0; i < array.length; i++)
+          {
+            if(array[i].x == x && array[i].y == y)
+             return true;
+          }
+          return false;
+        }
       });
       
       linda.io.on("connect", function() {
