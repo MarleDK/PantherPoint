@@ -10,19 +10,11 @@
   <div class="container">
     <div class="navbar-header">
       <a class="navbar-brand" href="#">Client</a>
+        <ul class="nav navbar-nav">
+            <button type="button" class="btn btn-danger navbar-btn navbar-right" id="btn_logout" style="display:none"><span class="glyphicon glyphicon-log-out"></span> Log out</button>
+        </ul>
     </div>
     <div id="navbar" class="navbar-collapse collapse">
-      <ul class="nav navbar-nav">
-          
-        <li class="dropdown">
-          <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="true">Menu <span class="caret"></span></a>
-          <ul class="dropdown-menu">
-            <li><a href="#">Leave host</a></li>
-            <li><a href="#">Connect to multiple hosts</a></li>
-          </ul>
-        </li>
-      </ul>
-        <button class="btn btn-danger navbar-btn navbar-right"> Log out</button>
     </div><!--/.nav-collapse -->
   </div>
 </nav>
@@ -36,7 +28,7 @@
     <p id="err_msg" style="color:red;"> <p>
     <p>Indtast dit navn:</p>
     <input class="input-sm" type="text" value="" id="navnefelt"><br><br>
-    <input class="btn btn-primary glyphicon glyphicon-log-in" type="button" value="Connect" id="btn_connect">
+    <button class="btn btn-primary" type="button" id="btn_connect"><span class="glyphicon glyphicon-log-in"></span>  Connect</button>
     <br>
     <div id="log"></div>
 </div>
@@ -73,7 +65,10 @@
 
   var socket = io.connect(server_url);
   var linda = new Linda().connect(socket);
-  var main
+  var main;
+  var room;
+  var name;
+  var code;
 
   linda.io.on("connect", function(){
     console.log("connected to distributing server " + server_url + "/main");
@@ -130,12 +125,13 @@
         if(tuple == null){
           $("#err_msg").html("Error: Room does not exist")
         } else {
-          var room = linda.tuplespace(code);
+          room = linda.tuplespace(code);
             room.readp({type: 'player', name: name}, function(err2, tuple2){
                 if(tuple2 !== null){
                     $("#err_msg").html("Error: Player name is already in room")
                 } else {
                     room.write({type: "player", name: name});
+                    $("#btn_logout").show();
                     $("#host_name").html("Connected to: "+code)
                     room.read({type:"activity"}, function(err1, tuple1){
                         updateView(tuple1.data.activity)
@@ -146,12 +142,18 @@
         })
     });
 
+    $("#btn_logout").click(function(){
+        room.take({type: 'player', name: name}, function(err, tuple){
+            updateView("login");
+        });
+        $("#btn_logout").hide();
+    })
+    
     $(document).keypress(function(e) {
       if(e.which == 13) {
         $("#btn_connect").click()
       }
-    });
-
+    })
   });
 </script>
 
