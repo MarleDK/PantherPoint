@@ -7,10 +7,16 @@ var http = require('http').Server(app)
 var io = require('socket.io')(http)
 var linda = require(path.resolve(__dirname, 'linda')).Server.listen({ io: io, server: http})
 var jQuery = require('jquery')
+const timeToKeepAlive = 60*1000*3;
 
 var hosts = linda.tuplespace('hosts');
 hosts.write({type: 'nextRoom', room: 'a1k4'});
-
+var NextRoomeKeepAlive = function(){
+  hosts.take({type: 'nextRoom'}, function(err, tuple){
+    hosts.write({type: 'nextRoom', room: tuple.data.room})
+  })
+}
+setInterval(NextRoomeKeepAlive, timeToKeepAlive)
 
 app.engine('html', exphbs());
 app.set('view engine', 'handlebars')
@@ -22,6 +28,10 @@ app.get('/', function (req, res) {
 // Client
 app.get('/client', function (req, res) {
   res.sendFile(path.join(__dirname + '/client/client.html'))
+})
+
+app.get('/snake', function (req, res) {
+  res.sendFile(path.join(__dirname + '/client/snake.html'))
 })
 
 // Host

@@ -1,6 +1,6 @@
 <html>
 <head>
-<title>PantherPoint Client</title>
+<title>Client</title>
 <link href="https://fonts.googleapis.com/css?family=Open+Sans" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/css/bootstrap.min.css" />
 <link rel="stylesheet" href="/index.css" />
@@ -8,26 +8,13 @@
 <nav class="navbar navbar-inverse navbar-fixed-top">
   <div class="container">
     <div class="navbar-header">
-      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
-        <span class="sr-only">Toggle navigation</span>
-        <span class="icon-bar"></span>
-        <span class="icon-bar"></span>
-        <span class="icon-bar"></span>
-      </button>
       <a class="navbar-brand" href="#">Client</a>
+        <ul class="nav navbar-nav navbar-right">
+            <button type="button" class="btn btn-danger navbar-btn" id="btn_logout" style="display:none"><span class="glyphicon glyphicon-log-out"></span> Log out</button>
+        </ul>
     </div>
     <div id="navbar" class="navbar-collapse collapse">
-      <ul class="nav navbar-nav">
-        <li class="dropdown">
-          <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="true">Menu <span class="caret"></span></a>
-          <ul class="dropdown-menu">
-            <li><a href="#">Leave host</a></li>
-            <li><a href="#">Connect to multiple hosts</a></li>
-          </ul>
-        </li>
-      </ul>
-      <ul class="nav navbar-nav navbar-right">
-      </ul>
+        <button type="button" class="btn btn-danger navbar-btn" id="btn_logout" style="display:none"><span class="glyphicon glyphicon-log-out"></span> Log out</button>
     </div><!--/.nav-collapse -->
   </div>
 </nav>
@@ -41,36 +28,31 @@
     <p id="err_msg" style="color:red;"> <p>
     <p>Indtast dit navn:</p>
     <input class="input-sm" type="text" value="" id="navnefelt"><br><br>
-    <input class="btn btn-primary" type="button" value="Connect" id="btn_connect">
+    <button class="btn btn-primary" type="button" id="btn_connect"><span class="glyphicon glyphicon-log-in"></span>  Connect</button>
     <br>
     <div id="log"></div>
 </div>
 
 <!-- This view is shown, when the user is connected to a host -->
-<div class="text-center" id="choose_activity" style="display:none">
+<div class="text-center" id="none" style="display:none">
   <h1 id="host_name"> </h1>
   <div class="btn-group-vertical btn-lg">
-    <button id="chat" type="button" class="btn btn-primary btn-big"> chat </button>
-    <button id="snake" type="button" class="btn btn-primary btn-big"> snake </button>
+    <button id="btn_chat" type="button" class="btn btn-primary btn-big"> Chat </button>
+    <button id="btn_snake" type="button" class="btn btn-primary btn-big"> Snake </button>
   </div>
 </div>
 
 <div class ="text-center" id="snake" style="display:none">
-  <div class="btn-group btn-lg">
-    <button id="left" type="button" class="btn btn-prmiary btn-big"> L </button>
-    <button id="right" type="button" class="btn btn-prmiary btn-big"> R </button>
 
-  </div>
 </div>
-
-
 
 <script src="/socket.io/socket.io.js"></script>
 <script src="/linda/linda.js"></script>
 <script src="/jquery/jquery.js"></script>
 <script>
   var server_url = "http://localhost:3000";
-  listOfViews = ["login","choose_activity","snake","chat"]
+  listOfViews = ["login","none","snake","chat"]
+  const timeToKeepAlive = 1000*60*3
 
   var print = function(msg){
     $("#log").prepend( $("<p>").text(msg) );
@@ -78,7 +60,10 @@
 
   var socket = io.connect(server_url);
   var linda = new Linda().connect(socket);
-  var main
+  var main;
+  var room;
+  var name;
+  var code;
 
   linda.io.on("connect", function(){
     console.log("connected to distributing server " + server_url + "/main");
@@ -88,25 +73,34 @@
   var updateView = function (activity) {
     listOfViews.forEach(function (view) {
       if(view == activity){
-        $("#"+view).show();
+        setTimeout(function() {
+            $("#"+view).fadeIn();
+            $("#"+view).show();
+        }, 400);
       } else {
-        $("#"+view).hide();
+        $("#"+view).fadeOut();
+        setTimeout(function() {
+            $("#"+view).hide()
+        }, 400);
+
       }
     })
   }
 
-  var startWatchHost = function (ts, name) {
+  function startWatchHost(ts, name) {
     var actWatch = ts.watch({type:"activity"},function(err,tuple){
       updateView(tuple.data.activity)
     });
 
-    //Denne function sender en ny tuple, med
+
+    //Denne function replacer spilleren's tuple i tuple-spacet, så den ikke udløber
     var keepAlive = setInterval(function(){
       ts.replace({type: "player", name: name},{type: "player", name: name});
-    },60*1000*3);
+    },timeToKeepAlive);
 
     //Denne del sletter watch functioner, så de ikke kører mere, hvis host'en ikke er connected til tuple-spacet mere
     //Og sletter setInterval's
+
     var chekcHostAlive = setInterval(function(){
       ts.readp({type:"hostActive"}, function(err, tuple){
         if(tuple == null){
@@ -115,38 +109,62 @@
           clearInterval(checkHostAlive)
         }
       });
-    },60*1000*3);
+    },timeToKeepAlive);
+
   }
+
+  $("#snake").load( "/snake #game" );
 
   // on page load
   $(function(){
 
     $("#btn_connect").click(function(){
+      $("#err_msg").html("")
       name = $("#navnefelt").val();
       code = $("#tekstfelt").val();
       main.readp({type: 'room', room: code}, function(err, tuple){
         if(tuple == null){
           $("#err_msg").html("Error: Room does not exist")
         } else {
-          var room = linda.tuplespace(code);
+          room = linda.tuplespace(code);
+            room.readp({type: 'player', name: name}, function(err2, tuple2){
+                if(tuple2 !== null){
+                    $("#err_msg").html("Error: Player name is already in room")
+                } else {
+                  startWatchHost(room, name);
+                  room.write({type: "player", name: name});
+                  $("#btn_logout").show();
+                  $("#host_name").html("Connected to: "+code)
+                  room.read({type:"activity"}, function(err1, tuple1){
+                      updateView(tuple1.data.activity)
+                  })
+                }
+            })
+          }
+        })
+    });
 
-          room.write({type: "player", name: name});
-          $("#host_name").html("Connected to: "+code)
-          $("#login").hide()
-          room.read({type:"activity"}, function(err1, tuple1){
-            updateView(tuple1.data.activity)
-
-          })
+    $("#btn_logout").click(function(){
+        room.take({type: 'player', name: name}, function(err, tuple){
+            updateView("login");
+        });
+        $("#btn_logout").hide();
+    })
+    
+    $("#btn_snake").click(function(){
+      room.takep({type:"activity"},function(err, tuple){
+        console.log("Snake clicked")
+        if(tuple !== null){
+          room.write({type:"activity",activity:"snake"})
         }
       })
-    });
+    })
 
     $(document).keypress(function(e) {
       if(e.which == 13) {
         $("#btn_connect").click()
       }
-    });
-
+    })
   });
 </script>
 

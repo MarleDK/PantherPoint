@@ -57,7 +57,10 @@
       var linda = new Linda().connect(socket);
       var hosts = linda.tuplespace('hosts');
       var room;
-      
+      const timeToKeepAlive = 60*1000*3;
+      var hostRoomKeepAliveID;
+
+
       hosts.linda.io.on('connect', function () {
         console.log('connected to tuplespace: ' + hosts.name);
 
@@ -68,19 +71,34 @@
         });
       });
 
+      var hostRoomKeepAlive = function(){
+        return setInterval(function(){
+          hosts.replace({type: 'room', room: room.name},{type: 'room', room: room.name})
+        }, timeToKeepAlive)
+      }
+
       function handleNewRoom(room) {
         $('.code').text(room.name);
         hosts.write({type: 'nextRoom', room: room.name});
         hosts.write({type: 'room', room: room.name});
         room.write({type:"hostActive"});
-        room.watch({type: 'player'}, function(err, tuple) {
+        room.write({type:"activity", activity:"none"});
+        room.watch({type: 'player'}, function (err, tuple) {
           print(tuple.data.name + " connected");
         });
+
         room.watch({type: 'activity'}, function (err, tuple) {
           if(tuple.data.activity == 'snake') {
             startSnake();
           }
         });
+
+        setInterval(function(){
+          room.replace({type:"hostActive"},{type:"hostActive"})
+        },timeToKeepAlive)
+        hosts.replace({type: 'room', room: room.name},{type: 'room', room: room.name})
+        hostRoomKeepAliveID = hostRoomKeepAlive();
+
       }
 
       function nextLetter (s) {
@@ -140,7 +158,7 @@
           room.write({type: 'activity', activity: target.data('name')});
         });
       });
-      
+
       linda.io.on("connect", function() {
         console.log('😁');
       });
