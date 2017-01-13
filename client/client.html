@@ -42,13 +42,13 @@
   </div>
 </div>
 
-<div class ="text-center" id="snake" style="display:none">
-
+<div class ="text-center" id="apps">
 </div>
 
 <script src="/socket.io/socket.io.js"></script>
 <script src="/linda/linda.js"></script>
 <script src="/jquery/jquery.js"></script>
+<script src="/apps/snake/client.js"></script>
 <script>
   var server_url = "http://localhost:3000";
   listOfViews = ["login","none","snake","chat"]
@@ -64,6 +64,7 @@
   var room;
   var name;
   var code;
+  var currentView;
 
   linda.io.on("connect", function(){
     console.log("connected to distributing server " + server_url + "/main");
@@ -71,20 +72,23 @@
   });
 
   var updateView = function (activity) {
-    listOfViews.forEach(function (view) {
-      if(view == activity){
-        setTimeout(function() {
+    if(activity !== currentView){
+      currentView = activity;
+      listOfViews.forEach(function (view) {
+        if(view == activity){
+          setTimeout(function() {
             $("#"+view).fadeIn();
             $("#"+view).show();
-        }, 400);
-      } else {
-        $("#"+view).fadeOut();
-        setTimeout(function() {
+          }, 400);
+        } else {
+          $("#"+view).fadeOut();
+          setTimeout(function() {
             $("#"+view).hide()
-        }, 400);
+          }, 400);
 
-      }
-    })
+        }
+      })
+    }
   }
 
   function startWatchHost(ts, name) {
@@ -112,8 +116,6 @@
     },timeToKeepAlive);
 
   }
-
-  $("#snake").load( "/snake #game" );
 
   // on page load
   $(function(){
@@ -150,10 +152,9 @@
         });
         $("#btn_logout").hide();
     })
-    
+
     $("#btn_snake").click(function(){
       room.takep({type:"activity"},function(err, tuple){
-        console.log("Snake clicked")
         if(tuple !== null){
           room.write({type:"activity",activity:"snake"})
         }
