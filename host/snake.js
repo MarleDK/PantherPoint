@@ -1,43 +1,52 @@
 var snake = {
+  canvas: '',
+  ctx: '',
+  width: '',
+  height: '',
+  cellWidth: 4,
+  direction: '',
+  snakes: [],
+
   startSnake: function($canvas, room) {
     $canvas.show();
-    var canvas = $canvas[0];
-    var ctx = canvas.getContext("2d");
-    var width = $canvas.width();
-    var height = $canvas.height();
-    canvas.width = width;
-    canvas.height = height;
-    var cellWidth = 4;
-    var direction;
-    var snake_array;
-    init();
+    snake.canvas = $canvas[0];
+    snake.ctx = snake.canvas.getContext("2d");
+    snake.width = $canvas.width();
+    snake.height = $canvas.height();
+    snake.canvas.width = snake.width;
+    snake.canvas.height = snake.height;
+    snake.cellWidth = 4;
+
+    room.readAll({type: 'player'}, function (err, list) {
+      list.forEach( function(player, index) {
+        var name = player.data.name;
+        var length = 8;
+        var color = "#"+((1<<24)*Math.random()|0).toString(16);
+        var start_dir = Math.floor(Math.random() * 4) + 1;
+        var dir;
+        if (start_dir == 1) dir = "right";
+        else if (start_dir == 2) dir = "left";
+        else if (start_dir == 3) dir = "up";
+        else if (start_dir == 4) dir = "down";
+        var start_x = Math.floor(Math.random()*((snake.width/snake.cellWidth-20)-20+1)+20);
+        var start_y = Math.floor(Math.random()*((snake.height/snake.cellWidth-20)-20+1)+20);
+        snake.snakes.push({name: name, color: color, direction: dir, coords: [{x: start_x, y:start_y}]});
+      });
+      snake.init();
+    });
   },
 
   init: function() {
-    var start_dir = Math.floor(Math.random() * 4) + 1;
-    if (start_dir == 1) d = "right";
-    else if (start_dir == 2) d = "left";
-    else if (start_dir == 3) d = "up";
-    else if (start_dir == 4) d = "down";
-    create_snake();
+    snake.ctx.fillStyle = "#BADA55";
+    snake.ctx.fillRect(0, 0, snake.width, snake.height);
 
     if(typeof game_loop != "undefined") clearInterval(game_loop);
-
-    game_loop = setInterval(paint, 50);
+    game_loop = setInterval(snake.paint, 50);
   },
 
-  create_snake: function() {
-    var length = 8;
-    snake_array = []; //Empty array to start with
-    var start_x = Math.floor(Math.random()*((width/cellWidth-20)-20+1)+20);
-    var start_y = Math.floor(Math.random()*((height/cellWidth-20)-20+1)+20);
-    console.log(start_x, start_y);
-    snake_array.push({x: start_x, y:start_y});
-  },
-
-  paint_cell: function(x, y) {
-    ctx.fillStyle = "black";
-    ctx.fillRect(x*cellWidth, y*cellWidth, cellWidth, cellWidth);
+  paint_cell: function(x, y, color) {
+    snake.ctx.fillStyle = color;
+    snake.ctx.fillRect(x*snake.cellWidth, y*snake.cellWidth, snake.cellWidth, snake.cellWidth);
   },
 
   check_collision: function(x, y, array) {
@@ -50,39 +59,30 @@ var snake = {
   },
 
   paint: function() {
-    ctx.fillStyle = "#BADA55";
-    ctx.fillRect(0, 0, width, height);
+    snake.snakes.forEach(function(currentSnake) {
+      var nx = currentSnake.coords[0].x;
+      var ny = currentSnake.coords[0].y;
 
-    var nx = snake_array[0].x;
-    var ny = snake_array[0].y;
+      var d = currentSnake.direction;
 
-    if(d == "right") nx++;
-    else if(d == "left") nx--;
-    else if(d == "up") ny--;
-    else if(d == "down") ny++;
+      if(d == "right") nx++;
+      else if(d == "left") nx--;
+      else if(d == "up") ny--;
+      else if(d == "down") ny++;
 
-    if(nx == -1 || nx == Math.ceil(width/cellWidth) || ny == -1 || ny == Math.ceil(height/cellWidth) || check_collision(nx, ny, snake_array))
-    {
-      init();
-      return;
-    }
+      if(nx == -1 || nx == Math.ceil(snake.width/snake.cellWidth) || ny == -1 || ny == Math.ceil(snake.height/snake.cellWidth) || snake.check_collision(nx, ny, currentSnake.coords))
+      {
+        return;
+      }
 
-    var tail = {x: nx, y: ny};
-    snake_array.unshift(tail);
+      var tail = {x: nx, y: ny};
+      currentSnake.coords.unshift(tail);
 
-    for(var i = 0; i < snake_array.length; i++)
-    {
-      var c = snake_array[i];
-      //Lets paint 10px wide cells
-      paint_cell(c.x, c.y);
-    }
+      for(var i = 0; i < currentSnake.coords.length; i++)
+      {
+        var c = currentSnake.coords[i];
+        snake.paint_cell(c.x, c.y, currentSnake.color);
+      }
+    });
   }
 }
-
-$(document).keydown(function(e){
-  var key = e.which;
-  if(key == "37" && d != "right") d = "left";
-  else if(key == "38" && d != "down") d = "up";
-  else if(key == "39" && d != "left") d = "right";
-  else if(key == "40" && d != "up") d = "down";
-});
