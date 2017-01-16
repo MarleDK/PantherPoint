@@ -17,23 +17,35 @@ var snake = {
     snake.canvas.height = snake.height;
     snake.cellWidth = 4;
 
+    console.log(room);
+
     room.readAll({type: 'player'}, function (err, list) {
       list.forEach( function(player, index) {
         var name = player.data.name;
         var length = 8;
         var color = "#"+((1<<24)*Math.random()|0).toString(16);
-        var start_dir = Math.floor(Math.random() * 4) + 1;
-        var dir;
-        if (start_dir == 1) dir = "right";
-        else if (start_dir == 2) dir = "left";
-        else if (start_dir == 3) dir = "up";
-        else if (start_dir == 4) dir = "down";
+        var start_dir = Math.floor(Math.random() * 4);
+        var dir = snake.getDirection(start_dir);
         var start_x = Math.floor(Math.random()*((snake.width/snake.cellWidth-20)-20+1)+20);
         var start_y = Math.floor(Math.random()*((snake.height/snake.cellWidth-20)-20+1)+20);
-        snake.snakes.push({name: name, color: color, direction: dir, coords: [{x: start_x, y:start_y}]});
+        snake.snakes.push({name: name, color: color, direction: dir, move: 0, coords: [{x: start_x, y:start_y}]});
       });
       snake.init();
     });
+      var id = room.watch({type:"move"}, function(err1, tuple1){
+        snake.snakes.filter(function(x) {
+          return x.name == tuple1.data.name
+        })[0].move = tuple1.data.direction
+      });  },
+
+  getDirection: function(dirInt) {
+    if (dirInt > 3) {
+      return dirInt%4;
+    } else if (dirInt < 0) {
+      return snake.getDirection(dirInt+4);
+    } else {
+      return dirInt;
+    }
   },
 
   init: function() {
@@ -62,13 +74,14 @@ var snake = {
     snake.snakes.forEach(function(currentSnake) {
       var nx = currentSnake.coords[0].x;
       var ny = currentSnake.coords[0].y;
-
+      currentSnake.direction = snake.getDirection(currentSnake.direction+currentSnake.move)
       var d = currentSnake.direction;
 
-      if(d == "right") nx++;
-      else if(d == "left") nx--;
-      else if(d == "up") ny--;
-      else if(d == "down") ny++;
+      if(d == 0) nx++;
+      else if(d == 1) ny++;
+      else if(d == 2) nx--;
+      else if(d == 3) ny--;
+      currentSnake.move = 0;
 
       if(nx == -1 || nx == Math.ceil(snake.width/snake.cellWidth) || ny == -1 || ny == Math.ceil(snake.height/snake.cellWidth) || snake.check_collision(nx, ny, currentSnake.coords))
       {
