@@ -17,8 +17,6 @@ var snake = {
     snake.canvas.height = snake.height;
     snake.cellWidth = 4;
 
-    console.log(room);
-
     room.readAll({type: 'player'}, function (err, list) {
       list.forEach( function(player, index) {
         var name = player.data.name;
@@ -64,14 +62,10 @@ var snake = {
   },
 
   check_collision: function(x, y) {
-    console.log('cc line 67 x:'+x+' y'+y)
     var b = false;
     snake.snakes.forEach(function(currentSnake) {
       currentSnake.coords.forEach(function(coord){
         if(coord.x == x && coord.y == y){
-          console.log('true');
-          console.log('cc line 67 x:'+x+' y'+y)
-          console.log('x:'+coord.x+' y:'+coord.y)
           b = true;
         }
       })
@@ -91,11 +85,9 @@ var snake = {
       else if(d == 1) ny++;
       else if(d == 2) nx--;
       else if(d == 3) ny--;
-        console.log('nx:'+nx+' ny'+ny)
 
       if(nx == -1 || nx == Math.ceil(snake.width/snake.cellWidth) || ny == -1 || ny == Math.ceil(snake.height/snake.cellWidth) || snake.check_collision(nx, ny))
       {
-        console.log(currentSnake.name + ' is dead')
         currentSnake.name = null;
         return;
       }
