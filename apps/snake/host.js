@@ -22,6 +22,7 @@ var snake = {
         var name = player.data.name;
         var length = 8;
         var color = "#"+((1<<24)*Math.random()|0).toString(16);
+        console.log(name+' '+color)
         room.write({type: 'color', name: name, color: color})
         var start_dir = Math.floor(Math.random() * 4);
         var dir = snake.getDirection(start_dir);

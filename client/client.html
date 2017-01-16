@@ -37,9 +37,7 @@
 <!-- This view is shown, when the user is connected to a host -->
 <div class="text-center" id="none" style="display:none">
   <h1 id="host_name"> </h1>
-  <div class="btn-group-vertical btn-lg">
-    <button id="btn_chat" type="button" class="btn btn-primary btn-big"> Chat </button>
-    <button id="btn_snake" type="button" class="btn btn-primary btn-big"> Snake </button>
+  <div id="none_btns" class="btn-group-vertical btn-lg">
   </div>
 </div>
 
@@ -49,10 +47,9 @@
 <script src="/socket.io/socket.io.js"></script>
 <script src="/linda/linda.js"></script>
 <script src="/jquery/jquery.js"></script>
-<script src="/apps/snake/client.js"></script>
 <script>
-  var server_url = "http://localhost:3000";
-  listOfViews = ["login","none","snake","chat"]
+  var server_url = "http://10.16.135.61:3000";
+  listOfViews = [{name:'login',init:function(){}},{name:'none',init:function(){}}]
   const timeToKeepAlive = 1000*60*3
 
   var print = function(msg){
@@ -76,15 +73,16 @@
     if(activity !== currentView){
       currentView = activity;
       listOfViews.forEach(function (view) {
-        if(view == activity){
+        if(view.name == activity){
+          view.init()
           setTimeout(function() {
-            $("#"+view).fadeIn();
-            $("#"+view).show();
+            $("#"+view.name).fadeIn();
+            $("#"+view.name).show();
           }, 400);
         } else {
-          $("#"+view).fadeOut();
+          $("#"+view.name).fadeOut();
           setTimeout(function() {
-            $("#"+view).hide()
+            $("#"+view.name).hide()
           }, 400);
 
         }
@@ -169,13 +167,7 @@
         $("#btn_logout").hide();
     })
 
-    $("#btn_snake").click(function(){
-      room.takep({type:"activity"},function(err, tuple){
-        if(tuple !== null){
-          room.write({type:"activity",activity:"snake"})
-        }
-      })
-    })
+    
 
     $(document).keypress(function(e) {
       if(e.which == 13) {
@@ -184,6 +176,7 @@
     })
   });
 </script>
+<script src="/apps/snake/client.js"></script>
 
 </body>
 </html>
