@@ -94,6 +94,7 @@
 
     init: function(ts, name) {
       var actWatch = ts.watch({type:"activity"},function(err,tuple){
+        console.log(tuple.data)
         if (tuple !== null) {
           updateView(tuple.data.activity)
         }
@@ -117,7 +118,6 @@
       },timeToKeepAlive);
 
       var hostObject = {ts: ts, actWatch: actWatch, keepAlive: keepAlive, checkHostAlive: checkHostAlive};
-      console.log(hostObject)
       return hostObject;
     },
 
@@ -167,7 +167,7 @@
         $("#btn_logout").hide();
     })
 
-    
+
 
     $(document).keypress(function(e) {
       if(e.which == 13) {
@@ -177,6 +177,7 @@
   });
 </script>
 <script src="/apps/snake/client.js"></script>
+<script src="/apps/chat/client.js"></script>
 
 </body>
 </html>

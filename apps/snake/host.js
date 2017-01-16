@@ -1,4 +1,5 @@
 var snake = {
+  activityName: 'snake',
   canvas: '',
   ctx: '',
   width: '',
@@ -7,9 +8,10 @@ var snake = {
   direction: '',
   snakes: [],
 
-  startSnake: function($canvas, room) {
-    $canvas.show();
-    snake.canvas = $canvas[0];
+  init: function() {
+    $canvas = $('canvas')
+    $('canvas').show();
+    snake.canvas = $('canvas')[0];
     snake.ctx = snake.canvas.getContext("2d");
     snake.width = $canvas.width();
     snake.height = $canvas.height();
@@ -30,7 +32,7 @@ var snake = {
         var start_y = Math.floor(Math.random()*((snake.height/snake.cellWidth-20)-20+1)+20);
         snake.snakes.push({name: name, color: color, direction: dir, move: 0, coords: [{x: start_x, y:start_y}]});
       });
-      snake.init();
+      snake.initial();
     });
       var id = room.watch({type:"move"}, function(err1, tuple1){
         var movingSnakes = snake.snakes.filter(function(x) {
@@ -50,7 +52,7 @@ var snake = {
     }
   },
 
-  init: function() {
+  initial: function() {
     snake.ctx.fillStyle = "#BADA55";
     snake.ctx.fillRect(0, 0, snake.width, snake.height);
 
@@ -105,3 +107,5 @@ var snake = {
     });
   }
 }
+
+listOfViews.push(snake)
