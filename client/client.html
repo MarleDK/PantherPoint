@@ -22,16 +22,17 @@
 
 
 <!-- This is the first view the user see -->
-<div class="text-center" id="login">
-    <p>Indtast password for at connecte til skærmen:</p>
-    <input class="input-lg" type="text" value="" id="tekstfelt"><br><br>
-    <p id="err_msg" style="color:red;"> <p>
-    <p>Indtast dit navn:</p>
-    <input class="input-sm" type="text" value="" id="navnefelt"><br><br>
-    <button class="btn btn-primary" type="button" id="btn_connect"><span class="glyphicon glyphicon-log-in"></span>  Connect</button>
-    <br>
-    <div id="log"></div>
-</div>
+  <div class="form" id="login">
+      <p>Host ID:</p>
+      <input class="input-lg" type="text" value="" id="tekstfelt"><br><br>
+      <p id="err_msg" style="color:red;"> <p>
+      <p>Name:</p>
+      <input class="input-lg" type="text" value="" id="navnefelt"><br><br>
+      <button class="btn btn-primary" type="button" id="btn_connect"><span class="glyphicon glyphicon-log-in"></span>  Connect</button>
+      <br>
+      <div id="log"></div>
+  </div>
+
 
 <!-- This view is shown, when the user is connected to a host -->
 <div class="text-center" id="none" style="display:none">
@@ -42,13 +43,13 @@
   </div>
 </div>
 
-<div class ="text-center" id="snake" style="display:none">
-
+<div class ="text-center" id="apps">
 </div>
 
 <script src="/socket.io/socket.io.js"></script>
 <script src="/linda/linda.js"></script>
 <script src="/jquery/jquery.js"></script>
+<script src="/apps/snake/client.js"></script>
 <script>
   var server_url = "http://localhost:3000";
   listOfViews = ["login","none","snake","chat"]
@@ -64,6 +65,7 @@
   var room;
   var name;
   var code;
+  var currentView;
 
   linda.io.on("connect", function(){
     console.log("connected to distributing server " + server_url + "/main");
@@ -71,52 +73,67 @@
   });
 
   var updateView = function (activity) {
-    listOfViews.forEach(function (view) {
-      if(view == activity){
-        setTimeout(function() {
+    if(activity !== currentView){
+      currentView = activity;
+      listOfViews.forEach(function (view) {
+        if(view == activity){
+          setTimeout(function() {
             $("#"+view).fadeIn();
             $("#"+view).show();
-        }, 400);
-      } else {
-        $("#"+view).fadeOut();
-        setTimeout(function() {
+          }, 400);
+        } else {
+          $("#"+view).fadeOut();
+          setTimeout(function() {
             $("#"+view).hide()
-        }, 400);
+          }, 400);
 
-      }
-    })
+        }
+      })
+    }
   }
 
-  function startWatchHost(ts, name) {
-    var actWatch = ts.watch({type:"activity"},function(err,tuple){
-      updateView(tuple.data.activity)
-    });
+  var watchHost = {
 
-
-    //Denne function replacer spilleren's tuple i tuple-spacet, så den ikke udløber
-    var keepAlive = setInterval(function(){
-      ts.replace({type: "player", name: name},{type: "player", name: name});
-    },timeToKeepAlive);
-
-    //Denne del sletter watch functioner, så de ikke kører mere, hvis host'en ikke er connected til tuple-spacet mere
-    //Og sletter setInterval's
-
-    var chekcHostAlive = setInterval(function(){
-      ts.readp({type:"hostActive"}, function(err, tuple){
-        if(tuple == null){
-          ts.cancel(actWatch)
-          clearInterval(keepAlive)
-          clearInterval(checkHostAlive)
+    init: function(ts, name) {
+      var actWatch = ts.watch({type:"activity"},function(err,tuple){
+        if (tuple !== null) {
+          updateView(tuple.data.activity)
         }
       });
-    },timeToKeepAlive);
 
-  }
 
-  $("#snake").load( "/snake #game" );
+      //Denne function replacer spilleren's tuple i tuple-spacet, så den ikke udløber
+      var keepAlive = setInterval(function(){
+        ts.replace({type: "player", name: name},{type: "player", name: name});
+      },timeToKeepAlive);
+
+      //Denne del sletter watch functioner, så de ikke kører mere, hvis host'en ikke er connected til tuple-spacet mere
+      //Og sletter setInterval's
+
+      var checkHostAlive = setInterval(function(){
+        ts.readp({type:"hostActive"}, function(err, tuple){
+          if(tuple == null){
+            watchHost.close(hostObject);
+          }
+        });
+      },timeToKeepAlive);
+
+      var hostObject = {ts: ts, actWatch: actWatch, keepAlive: keepAlive, checkHostAlive: checkHostAlive};
+      console.log(hostObject)
+      return hostObject;
+    },
+
+    close: function(hostObject) {
+      hostObject.ts.cancel(hostObject.actWatch)
+      clearInterval(hostObject.keepAlive)
+      clearInterval(hostObject.checkHostAlive)
+    }
+
+  };
 
   // on page load
   $(function(){
+    var hostWatcher;
 
     $("#btn_connect").click(function(){
       $("#err_msg").html("")
@@ -131,7 +148,7 @@
                 if(tuple2 !== null){
                     $("#err_msg").html("Error: Player name is already in room")
                 } else {
-                  startWatchHost(room, name);
+                  hostWatcher = watchHost.init(room, name);
                   room.write({type: "player", name: name});
                   $("#btn_logout").show();
                   $("#host_name").html("Connected to: "+code)
@@ -147,13 +164,13 @@
     $("#btn_logout").click(function(){
         room.take({type: 'player', name: name}, function(err, tuple){
             updateView("login");
+            watchHost.close(hostWatcher)
         });
         $("#btn_logout").hide();
     })
-    
+
     $("#btn_snake").click(function(){
       room.takep({type:"activity"},function(err, tuple){
-        console.log("Snake clicked")
         if(tuple !== null){
           room.write({type:"activity",activity:"snake"})
         }
