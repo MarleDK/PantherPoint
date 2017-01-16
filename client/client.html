@@ -22,16 +22,17 @@
 
 
 <!-- This is the first view the user see -->
-<div class="text-center" id="login">
-    <p>Indtast password for at connecte til skærmen:</p>
-    <input class="input-lg" type="text" value="" id="tekstfelt"><br><br>
-    <p id="err_msg" style="color:red;"> <p>
-    <p>Indtast dit navn:</p>
-    <input class="input-sm" type="text" value="" id="navnefelt"><br><br>
-    <button class="btn btn-primary" type="button" id="btn_connect"><span class="glyphicon glyphicon-log-in"></span>  Connect</button>
-    <br>
-    <div id="log"></div>
-</div>
+  <div class="form" id="login">
+      <p>Host ID:</p>
+      <input class="input-lg" type="text" value="" id="tekstfelt"><br><br>
+      <p id="err_msg" style="color:red;"> <p>
+      <p>Name:</p>
+      <input class="input-lg" type="text" value="" id="navnefelt"><br><br>
+      <button class="btn btn-primary" type="button" id="btn_connect"><span class="glyphicon glyphicon-log-in"></span>  Connect</button>
+      <br>
+      <div id="log"></div>
+  </div>
+
 
 <!-- This view is shown, when the user is connected to a host -->
 <div class="text-center" id="none" style="display:none">

@@ -2,6 +2,19 @@
   <head>
     <title>Host</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/css/bootstrap.min.css" />
+    <style>
+      #game {
+        display: none;
+        height: 100vh;
+        width: 100vw;
+        box-sizing: border-box;
+        position: fixed;
+        background: white;
+        z-index: 9999;
+        top: 0;
+        left: 0;
+      }
+    </style>
   </head>
   <nav class="navbar navbar-inverse navbar-fixed-top">
     <div class="container">
@@ -31,13 +44,15 @@
   </nav>
   <body class="container" style="margin-top: 70px">
     <h1>Host</h1>
-    <h2 class="code" style="color: red; border-bottom: 2px solid red; padding-bottom: 5px"></h2>
+    <h2 class="code" style="color: #1e5799; border-bottom: 2px solid #1e5799; padding-bottom: 5px"></h2>
     <div id="log" style="height: 300px; overflow-y: scroll; overflow-x: hidden;"></div>
+    <canvas id="game"></canvas>
     <script src="/socket.io/socket.io.js"></script>
     <script src="/linda/linda.js"></script>
     <script src="/jquery/jquery.js"></script>
     <script src="/bootstrap/bootstrap.js"></script>
     <script src="/apps/lykkehjul/host.js"></script>
+    <script src="/apps/snake/host.js"></script>
     <script>
       var server_url = "http://localhost:3000";
       var socket = io.connect(server_url);
@@ -61,13 +76,17 @@
       function handleNewRoom(room) {
         $('.code').text(room.name);
         hosts.write({type: 'nextRoom', room: room.name});
+        hosts.write({type: 'room', room: room.name});
+        room.write({type:"hostActive"});
         room.write({type:"activity", activity:"none"});
         room.watch({type: 'player'}, function (err, tuple) {
           print(tuple.data.name + " connected");
         });
 
         room.watch({type: 'activity'}, function (err, tuple) {
-          //updateView(tuple.data.activity)
+          if(tuple.data.activity == 'snake') {
+            snake.startSnake($('canvas'), room);
+          }
         });
 
         room.replace({type:"hostActive"},{type:"hostActive"})
