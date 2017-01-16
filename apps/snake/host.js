@@ -33,9 +33,11 @@ var snake = {
       snake.init();
     });
       var id = room.watch({type:"move"}, function(err1, tuple1){
-        snake.snakes.filter(function(x) {
+        var movingSnakes = snake.snakes.filter(function(x) {
           return x.name == tuple1.data.name
-        })[0].move = tuple1.data.direction
+        })
+        if(movingSnakes.length == 0){return}
+        movingSnakes[0].move = tuple1.data.direction
       });  },
 
   getDirection: function(dirInt) {
@@ -61,30 +63,40 @@ var snake = {
     snake.ctx.fillRect(x*snake.cellWidth, y*snake.cellWidth, snake.cellWidth, snake.cellWidth);
   },
 
-  check_collision: function(x, y, array) {
-    for(var i = 0; i < array.length; i++)
-    {
-      if(array[i].x == x && array[i].y == y)
-       return true;
-    }
-    return false;
+  check_collision: function(x, y) {
+    console.log('cc line 67 x:'+x+' y'+y)
+    var b = false;
+    snake.snakes.forEach(function(currentSnake) {
+      currentSnake.coords.forEach(function(coord){
+        if(coord.x == x && coord.y == y){
+          console.log('true');
+          console.log('cc line 67 x:'+x+' y'+y)
+          console.log('x:'+coord.x+' y:'+coord.y)
+          b = true;
+        }
+      })
+    });
+    return b;
   },
 
   paint: function() {
-    snake.snakes.forEach(function(currentSnake) {
+    snake.snakes.filter(function(x){return x.name !== null}).forEach(function(currentSnake) {
       var nx = currentSnake.coords[0].x;
       var ny = currentSnake.coords[0].y;
       currentSnake.direction = snake.getDirection(currentSnake.direction+currentSnake.move)
       var d = currentSnake.direction;
 
+      currentSnake.move = 0;
       if(d == 0) nx++;
       else if(d == 1) ny++;
       else if(d == 2) nx--;
       else if(d == 3) ny--;
-      currentSnake.move = 0;
+        console.log('nx:'+nx+' ny'+ny)
 
-      if(nx == -1 || nx == Math.ceil(snake.width/snake.cellWidth) || ny == -1 || ny == Math.ceil(snake.height/snake.cellWidth) || snake.check_collision(nx, ny, currentSnake.coords))
+      if(nx == -1 || nx == Math.ceil(snake.width/snake.cellWidth) || ny == -1 || ny == Math.ceil(snake.height/snake.cellWidth) || snake.check_collision(nx, ny))
       {
+        console.log(currentSnake.name + ' is dead')
+        currentSnake.name = null;
         return;
       }
 
