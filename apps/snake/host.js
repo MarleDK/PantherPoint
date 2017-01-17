@@ -105,6 +105,10 @@ var snake = {
         if(aliveSnakes.length == 1){
           /////////////Lav noget print af vinder
           console.log("The winner is found")
+          snake.ctx.font = "50px Arial";
+          snake.ctx.textAlign = "center";
+          snake.ctx.strokeText("The winner is " + aliveSnakes[0].name, snake.canvas.width/2, snake.canvas.height/2);
+          snake.ctx.fillText("The winner is " + aliveSnakes[0].name, snake.canvas.width/2, snake.canvas.height/2);
           snake.close(game_loop, moveWatchId)
         } else if(aliveSnakes.length == 0){
 
