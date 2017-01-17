@@ -18,6 +18,7 @@ var snake = {
     snake.canvas.width = snake.width;
     snake.canvas.height = snake.height;
     snake.cellWidth = 4;
+    snake.snakes = [];
 
     room.readAll({type: 'player'}, function (err, list) {
       list.forEach( function(player, index) {
@@ -34,13 +35,8 @@ var snake = {
       });
       snake.initial();
     });
-      var id = room.watch({type:"move"}, function(err1, tuple1){
-        var movingSnakes = snake.snakes.filter(function(x) {
-          return x.name == tuple1.data.name
-        })
-        if(movingSnakes.length == 0){return}
-        movingSnakes[0].move = tuple1.data.direction
-      });  },
+
+    },
 
   getDirection: function(dirInt) {
     if (dirInt > 3) {
@@ -55,9 +51,19 @@ var snake = {
   initial: function() {
     snake.ctx.fillStyle = "#BADA55";
     snake.ctx.fillRect(0, 0, snake.width, snake.height);
+    var moveWatchId = room.watch({type:"move"}, function(err1, tuple1){
+      var movingSnake = snake.snakes.find(function(x) {
+        return x.name == tuple1.data.name
+      })
+      if(typeof movingSnake == 'undefined'){
+        return
+      } else {
+        movingSnake.move = tuple1.data.direction
+      }
+    });
 
     if(typeof game_loop != "undefined") clearInterval(game_loop);
-    game_loop = setInterval(snake.paint, 50);
+    var game_loop = setInterval(function(){snake.paint(game_loop,moveWatchId)}, 50);
   },
 
   paint_cell: function(x, y, color) {
@@ -77,7 +83,7 @@ var snake = {
     return b;
   },
 
-  paint: function() {
+  paint: function(game_loop, moveWatchId) {
     snake.snakes.filter(function(x){return x.name !== null}).forEach(function(currentSnake) {
       var nx = currentSnake.coords[0].x;
       var ny = currentSnake.coords[0].y;
@@ -93,6 +99,16 @@ var snake = {
       if(nx == -1 || nx == Math.ceil(snake.width/snake.cellWidth) || ny == -1 || ny == Math.ceil(snake.height/snake.cellWidth) || snake.check_collision(nx, ny))
       {
         currentSnake.name = null;
+        var aliveSnakes = snake.snakes.filter(function(x){return x.name !== null})
+        if(aliveSnakes.length == 1){
+          /////////////Lav noget print af vinder
+          console.log("The winner is found")
+          snake.close(game_loop, moveWatchId)
+        } else if(aliveSnakes.length == 0){
+
+          console.log("No winner found")
+          snake.close(game_loop, moveWatchId)
+        }
         return;
       }
 
@@ -105,6 +121,17 @@ var snake = {
         snake.paint_cell(c.x, c.y, currentSnake.color);
       }
     });
+  },
+
+  close: function(game_loop, moveWatchId){
+    console.log(moveWatchId + ' '+ game_loop)
+
+    clearInterval(moveWatchId)
+    clearInterval(game_loop)
+    setTimeout(function(){
+      room.takeAll({type:'move'},function(err, tuple){})
+      room.replace({type:'activity'},{type:'activity',activity:'none'})
+    },5000)
   }
 }
 

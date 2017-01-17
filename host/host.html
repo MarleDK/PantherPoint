@@ -53,12 +53,12 @@
     <script src="/jquery/jquery.js"></script>
     <script src="/bootstrap/bootstrap.js"></script>
     <script>
-      var server_url = "http://localhost:3000";
+      var server_url = "http://10.16.135.61:3000";
       var socket = io.connect(server_url);
       var linda = new Linda().connect(socket);
       var hosts = linda.tuplespace('hosts');
       var room;
-      var listOfViews = []
+      var listOfViews = [{activityName:'none', init:function(){$('canvas').hide(); $('#log').show();}}]
       const timeToKeepAlive = 60*1000*3;
       var hostRoomKeepAliveID;
 
