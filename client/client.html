@@ -1,10 +1,11 @@
 <html>
 <head>
 <title>Client</title>
+<!-- Bootstrap and local style CSS references -->
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/css/bootstrap.min.css" />
 <link rel="stylesheet" href="/index.css" />
 </head>
-  
+  <!-- Top navigation bar with log out button and collapsing menu with small screens -->
   <nav class="navbar navbar-inverse navbar-fixed-top">
     <div class="container">
       <div class="navbar-header">
@@ -21,10 +22,10 @@
         </ul>
         <ul class="nav navbar-nav navbar-right">
           <div class="logout">
-                    <button type="button" class="btn btn-danger navbar-btn btn-block" id="btn_logout" data-toggle="collapse" data-target="#navbar" style="display:none"><span class="glyphicon glyphicon-log-out"></span> Log out</button>
+            <button type="button" class="btn btn-danger navbar-btn btn-block" id="btn_logout" data-toggle="collapse" data-target="#navbar" style="display:none"><span class="glyphicon glyphicon-log-out"></span> Log out</button>
           </div>
         </ul>
-      </div><!--/.nav-collapse -->
+      </div>
     </div>
   </nav>
 
@@ -45,146 +46,21 @@
 <!-- This view is shown, when the user is connected to a host -->
 <div class="text-center" id="none" style="display:none">
   <h1 id="host_name"> </h1>
-  <div id="none_btns" class="btn-group-vertical btn-lg">
-  </div>
+  <div id="none_btns" class="btn-group-vertical btn-lg"></div>
 </div>
-
-<div class ="text-center" id="apps">
-</div>
-
+<div class ="text-center" id="apps"></div>
+  
+  
+<!-- Javascript dependencies - loaded last for speeding up page load -->
 <script src="/socket.io/socket.io.js"></script>
 <script src="/linda/linda.js"></script>
 <script src="/jquery/jquery.js"></script>
 <script src="/bootstrap/bootstrap.js"></script>
-<script>
-  var server_url = "http://localhost:3000";
-  listOfViews = [{name:'login',init:function(){}},{name:'none',init:function(){}}]
-  const timeToKeepAlive = 1000*60*3
-
-  var print = function(msg){
-    $("#log").prepend( $("<p>").text(msg) );
-  };
-
-  var socket = io.connect(server_url);
-  var linda = new Linda().connect(socket);
-  var main;
-  var room;
-  var name;
-  var code;
-  var currentView;
-
-  linda.io.on("connect", function(){
-    console.log("connected to distributing server " + server_url + "/main");
-    main = linda.tuplespace("hosts")
-  });
-
-  var updateView = function (activity) {
-    if(activity !== currentView){
-      currentView = activity;
-      listOfViews.forEach(function (view) {
-        if(view.name == activity){
-          view.init()
-          setTimeout(function() {
-            $("#"+view.name).fadeIn();
-            $("#"+view.name).show();
-          }, 400);
-        } else {
-          $("#"+view.name).fadeOut();
-          setTimeout(function() {
-            $("#"+view.name).hide()
-          }, 400);
-
-        }
-      })
-    }
-  }
-
-  var watchHost = {
-
-    init: function(ts, name) {
-      var actWatch = ts.watch({type:"activity"},function(err,tuple){
-        console.log(tuple.data)
-        if (tuple !== null) {
-          updateView(tuple.data.activity)
-        }
-      });
-
-
-      //Denne function replacer spilleren's tuple i tuple-spacet, så den ikke udløber
-      var keepAlive = setInterval(function(){
-        ts.replace({type: "player", name: name},{type: "player", name: name});
-      },timeToKeepAlive);
-
-      //Denne del sletter watch functioner, så de ikke kører mere, hvis host'en ikke er connected til tuple-spacet mere
-      //Og sletter setInterval's
-
-      var checkHostAlive = setInterval(function(){
-        ts.readp({type:"hostActive"}, function(err, tuple){
-          if(tuple == null){
-            watchHost.close(hostObject);
-          }
-        });
-      },timeToKeepAlive);
-
-      var hostObject = {ts: ts, actWatch: actWatch, keepAlive: keepAlive, checkHostAlive: checkHostAlive};
-      return hostObject;
-    },
-
-    close: function(hostObject) {
-      hostObject.ts.cancel(hostObject.actWatch)
-      clearInterval(hostObject.keepAlive)
-      clearInterval(hostObject.checkHostAlive)
-    }
-
-  };
-
-  // on page load
-  $(function(){
-    var hostWatcher;
-
-    $("#btn_connect").click(function(){
-      $("#err_msg").html("")
-      name = $("#navnefelt").val();
-      code = $("#tekstfelt").val();
-      main.readp({type: 'room', room: code}, function(err, tuple){
-        if(tuple == null){
-          $("#err_msg").html("Error: Room does not exist")
-        } else {
-          room = linda.tuplespace(code);
-            room.readp({type: 'player', name: name}, function(err2, tuple2){
-                if(tuple2 !== null){
-                    $("#err_msg").html("Error: Player name is already in room")
-                } else {
-                  hostWatcher = watchHost.init(room, name);
-                  room.write({type: "player", name: name});
-                  $("#btn_logout").show();
-                  $("#host_name").html("Connected to: "+code)
-                  room.read({type:"activity"}, function(err1, tuple1){
-                      updateView(tuple1.data.activity)
-                  })
-                }
-            })
-          }
-        })
-    });
-
-    $("#btn_logout").click(function(){
-        room.take({type: 'player', name: name}, function(err, tuple){
-            updateView("login");
-            watchHost.close(hostWatcher)
-        });
-        $("#btn_logout").hide();
-    })
-
-
-
-    $(document).keypress(function(e) {
-      if(e.which == 13) {
-        $("#btn_connect").click()
-      }
-    })
-  });
-</script>
+  
+<!-- Our own main client script -->
+<script src="/client.js"></script>
+  
+<!-- Apps -->
 <script src="/apps/snake/client.js"></script>
 <script src="/apps/chat/client.js"></script>
 
