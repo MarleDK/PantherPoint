@@ -12,7 +12,7 @@
   <script src="/jquery/jquery.js"></script>
   <script src="/bootstrap/bootstrap.js"></script>
   <script>
-  var server_url = "http://localhost:3000";
+  var server_url = "http://"+window.location.hostname+":3000";
   var socket = io.connect(server_url);
   var linda = new Linda().connect(socket);
   var hosts = linda.tuplespace('hosts')

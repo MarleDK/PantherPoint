@@ -31,6 +31,8 @@ var NextRoomeKeepAlive = function(){
 }
 setInterval(NextRoomeKeepAlive, timeToKeepAlive)
 
+
+
 //The rest of the code in this file is routing of specific files
 
 app.engine('html', exphbs());
@@ -107,5 +109,5 @@ app.get('/bootstrap/bootstrap.js', function(req, res) {
 });
 
 http.listen(3000, function () {
-  console.log('Example app listening on port 3000!')
+  console.log('app listening')
 })

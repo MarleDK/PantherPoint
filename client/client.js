@@ -1,6 +1,6 @@
 
 // The backend node.js server IP to connect to
-var server_url = "http://localhost:3000";
+var server_url = "http://"+window.location.hostname+":3000";;
 
   listOfViews = [{name:'login',init:function(){}},{name:'none',init:function(){}}]
   const timeToKeepAlive = 1000*60*3
