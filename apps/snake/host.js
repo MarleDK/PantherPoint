@@ -98,6 +98,8 @@ var snake = {
 
       if(nx == -1 || nx == Math.ceil(snake.width/snake.cellWidth) || ny == -1 || ny == Math.ceil(snake.height/snake.cellWidth) || snake.check_collision(nx, ny))
       {
+        room.write({type:'dead', name:currentSnake.name})
+        
         currentSnake.name = null;
         var aliveSnakes = snake.snakes.filter(function(x){return x.name !== null})
         if(aliveSnakes.length == 1){
