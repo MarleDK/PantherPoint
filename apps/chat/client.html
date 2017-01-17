@@ -3,19 +3,20 @@
     <title>Client</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/css/bootstrap.min.css" />
   </head>
-  <body id="chat_body"class="container">
-    <h1>Send besked</h1>
+  <body id="chat_body" class="container">
+    <h1>Send message to chat</h1>
     <hr />
     <div id="input_create">
-      <div class="row">
-        <div class="col-md-4">
-          <div class="form-group">
-            <label for="msg">Besked:</label>
-            <input class="form-control" type="text" id="msg" />
-          </div>
+      <div class="form-group">
+        <label for="msg">Message:</label>
+        <div class="input-group">
+          <input class="form-control" type="text" id="msg" />
+            <span class="input-group-btn">
+              <input class="btn btn-primary" type="button" value="Send" id="chat_send" />
+            </span>
         </div>
       </div>
-      <input class="btn btn-primary" type="button" value="Send" id="chat_send" />
+      
     </div>
     <hr />
   </body>
