@@ -1,7 +1,7 @@
 
-// The backend node.js server IP to connect to   
+// The backend node.js server IP to connect to
 var server_url = "http://localhost:3000";
-  
+
   listOfViews = [{name:'login',init:function(){}},{name:'none',init:function(){}}]
   const timeToKeepAlive = 1000*60*3
 
@@ -47,7 +47,6 @@ var server_url = "http://localhost:3000";
 
     init: function(ts, name) {
       var actWatch = ts.watch({type:"activity"},function(err,tuple){
-        console.log(tuple.data)
         if (tuple !== null) {
           updateView(tuple.data.activity)
         }
@@ -85,26 +84,26 @@ var server_url = "http://localhost:3000";
   // on page load
   $(function(){
     var hostWatcher;
-    
+
     // on connect button click
     $("#btn_connect").click(function(){
       $("#err_msg").html("")
       name = $("#navnefelt").val();
       code = $("#tekstfelt").val();
-      
+
       // Check if the room tuple exists
       main.readp({type: 'room', room: code}, function(err, tuple){
         if(tuple == null){
           $("#err_msg").html("Error: Room does not exist")
         } else {
           room = linda.tuplespace(code);
-            
+
           // Checks if there is a player with the same name already in the tuple
             room.readp({type: 'player', name: name}, function(err2, tuple2){
                 if(tuple2 !== null){
                     $("#err_msg").html("Error: Player name is already in room")
                 } else {
-                  
+
                   // Put the player inside the tuple -- connection established
                   hostWatcher = watchHost.init(room, name);
                   room.write({type: "player", name: name});
