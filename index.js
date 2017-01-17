@@ -90,6 +90,10 @@ app.get('/tests', function (req, res) {
   res.sendFile(path.join(__dirname + '/tests.html'))
 })
 
+app.get('/readTuples', function (req, res) {
+  res.sendFile(path.join(__dirname + '/readTuples.html'))
+})
+
 // Static
 app.get('/index.css', function (req, res) {
   res.sendFile(path.join(__dirname + '/index.css'))
