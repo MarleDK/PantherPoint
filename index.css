@@ -1,3 +1,4 @@
+/* Master css reference file for both host and client */
 
 .btn-huge{
   padding-top:8vh;
@@ -31,4 +32,21 @@
   text-align: center;
   box-shadow: 0 0 20px 0 rgba(0, 0, 0, 0.2), 0 5px 5px 0 rgba(0, 0, 0, 0.24);
   border-radius: 5px;
+}
+
+.logout {
+  padding-left: 40px;
+  padding-right: 40px;
+}
+
+#game {
+  display: none;
+  height: 100vh;
+  width: 100vw;
+  box-sizing: border-box;
+  position: fixed;
+  background: white;
+  z-index: 9999;
+  top: 0;
+  left: 0;
 }
