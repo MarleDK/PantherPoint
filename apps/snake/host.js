@@ -7,6 +7,7 @@ var snake = {
   cellWidth: 4,
   direction: '',
   snakes: [],
+  gameBegun: false,
 
   init: function() {
     $canvas = $('canvas')
@@ -33,6 +34,7 @@ var snake = {
         var start_y = Math.floor(Math.random()*((snake.height/snake.cellWidth-20)-20+1)+20);
         snake.snakes.push({name: name, color: color, direction: dir, move: 0, coords: [{x: start_x, y:start_y}]});
       });
+
       snake.initial();
     });
 
@@ -52,18 +54,31 @@ var snake = {
     snake.ctx.fillStyle = "#BADA55";
     snake.ctx.fillRect(0, 0, snake.width, snake.height);
     var moveWatchId = room.watch({type:"move"}, function(err1, tuple1){
-      var movingSnake = snake.snakes.find(function(x) {
-        return x.name == tuple1.data.name
-      })
-      if(typeof movingSnake == 'undefined'){
-        return
-      } else {
-        movingSnake.move = tuple1.data.direction
+      if (tuple1) {
+        var movingSnake = snake.snakes.find(function(x) {
+          return x.name == tuple1.data.name
+        })
+        if(typeof movingSnake == 'undefined'){
+          return
+        } else {
+          movingSnake.move = tuple1.data.direction
+        }
       }
     });
 
-    if(typeof game_loop != "undefined") clearInterval(game_loop);
-    var game_loop = setInterval(function(){snake.paint(game_loop,moveWatchId)}, 50);
+    var time = 4;
+    (function myLoop (i) {
+      setTimeout(function () {
+        if (i === 0) {
+          console.log("starting...");
+          if(typeof game_loop != "undefined") clearInterval(game_loop);
+          var game_loop = setInterval(function(){snake.paint(game_loop,moveWatchId)}, 50);
+        } else {
+          console.log("starting in " + i + " seconds");
+        }
+        if (i--) myLoop(i);
+      }, 1000)
+    })(--time);
   },
 
   paint_cell: function(x, y, color) {

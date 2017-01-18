@@ -94,20 +94,6 @@
         $("#log").scrollTop($("#log")[0].scrollHeight);
       };
 
-      function countDown (activity, time) {
-        print(activity + " starting in " + time + " seconds");
-        (function myLoop (i) {
-           setTimeout(function () {
-              if (i === 0) {
-                print(activity + " starting...");
-              } else {
-                print(activity + " starting in " + i + " seconds");
-              }
-              if (i--) myLoop(i);
-           }, 1000)
-        })(--time);
-      }
-
       $(function() {
         $('.activity').click(function(e){
           hosts.take({room: room.name}, function (err, tuple) {
