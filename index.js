@@ -52,8 +52,6 @@ app.get('/client.js', function (req, res) {
   res.sendFile(path.join(__dirname + '/client/client.js'))
 })
 
-app.use('/apps',express.static('apps'))
-
 // Host
 app.get('/host', function (req, res) {
   res.sendFile(path.join(__dirname + '/host/host.html'))
