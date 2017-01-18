@@ -49,6 +49,7 @@ var server_url = "http://"+window.location.hostname+":3000";;
       var actWatch = ts.watch({type:"activity"},function(err,tuple){
         if (tuple !== null) {
           updateView(tuple.data.activity)
+          
         }
       });
 
@@ -70,6 +71,7 @@ var server_url = "http://"+window.location.hostname+":3000";;
         ts.readp({type:"hostActive"}, function(err, tuple){
           if(tuple == null){
             updateView("login");
+            $("#navbar-brand").html("Client");
             watchHost.close(hostObject);
           }
         });
@@ -92,7 +94,7 @@ var server_url = "http://"+window.location.hostname+":3000";;
   // on page load
   $(function(){
     var hostWatcher;
-
+    
     // on connect button click
     $("#btn_connect").click(function(){
       $("#err_msg").html("")
@@ -132,6 +134,7 @@ var server_url = "http://"+window.location.hostname+":3000";;
         room.take({type: 'player', name: name}, function(err, tuple){
             updateView("login");
             watchHost.close(hostWatcher)
+            $("#navbar-brand").html("Client");
         });
         $("#btn_logout").hide();
     })
