@@ -9,15 +9,11 @@ var snake = {
     $("#apps").html('<div id="snake"></div>')
     $("#snake").load("/apps/snake/client.html #game")
 
-    $("#apps").delegate("#btn_snake_left", 'click', function(){
-      snake.moveFunc(-1)
-    })
+    $("#btn_snake_left").click( () => {snake.moveFunc(-1)})
 
-    $("#apps").delegate("#btn_snake_right", 'click', function() {
-      snake.moveFunc(1)
-    })
+    $("#btn_snake_right").click( () => {snake.moveFunc(1)})
 
-    $(document).keydown(function(e) {
+    $(document).bind('keydown.snake',function(e) {
       switch(e.which) {
         case 37: // left
         snake.moveFunc(-1)
@@ -30,17 +26,22 @@ var snake = {
         default: return; // exit this handler for other keys
       }
       e.preventDefault(); // prevent the default action (scroll / move caret)
-    
     });
+
     room.take({type:'color', name: name},function(err,tuple){
       $("#btn_snake_right").css("background-color", tuple.data.color)
       $("#btn_snake_left").css("background-color", tuple.data.color)
     })
-    
+
     room.take({type: 'dead', name: name}, function(err, tuple){
       $("#msg_log").html("You are dead!")
-      
     })
+  },
+
+  close: function(){
+    $( "#btn_snake_left" ).unbind();
+    $( "#btn_snake_right" ).unbind();
+    $(document).unbind('keydown.snake');
   }
 };
 

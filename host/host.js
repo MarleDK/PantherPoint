@@ -29,7 +29,7 @@
         });
 
         room.watch({type: 'activity'}, function (err, tuple) {
-          listOfViews.forEach(function(x){
+          listOfViews.forEach( x => {
             if(tuple.data.activity == x.activityName) {
               x.init();
             }

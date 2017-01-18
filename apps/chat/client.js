@@ -19,6 +19,8 @@ var chat = {
     })
   },
 
+  close: function(){}
+
 }
 
 $(function(){

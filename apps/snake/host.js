@@ -7,8 +7,13 @@ var snake = {
   cellWidth: 4,
   direction: '',
   snakes: [],
+  isRunning: false,
 
   init: function() {
+    if(snake.isRunning){
+      return
+    }
+    snake.isRunning = true;
     $canvas = $('canvas')
     $('canvas').show();
     snake.canvas = $('canvas')[0];
@@ -52,6 +57,7 @@ var snake = {
     snake.ctx.fillStyle = "#BADA55";
     snake.ctx.fillRect(0, 0, snake.width, snake.height);
     var moveWatchId = room.watch({type:"move"}, function(err1, tuple1){
+      console.log("Move recieved: "+JSON.stringify(tuple1))
       var movingSnake = snake.snakes.find(function(x) {
         return x.name == tuple1.data.name
       })
@@ -127,15 +133,18 @@ var snake = {
 
   close: function(game_loop, moveWatchId){
     console.log(moveWatchId + ' '+ game_loop)
-
+    console.log(room.watch_callback_ids)
+    room.io_callbacks.forEach(x => {console.log(x.listener)})
     room.cancel(moveWatchId)
     clearInterval(game_loop)
     kickAll(room)
     setTimeout(function(){
+      console.log(room.watch_callback_ids)
       room.takeAll({type:'move'},function(err, tuple){})
       room.takeAll({type:'color'},function(err, tuple){})
       room.takeAll({type:'dead'},function(err, tuple){})
       room.replace({type:'activity'},{type:'activity',activity:'none'})
+      snake.isRunning = false;
     },5000)
   }
 }
