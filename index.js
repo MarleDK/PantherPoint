@@ -61,6 +61,9 @@ app.get('/host', function (req, res) {
 app.get('/host.js', function (req, res) {
   res.sendFile(path.join(__dirname + '/host/host.js'))
 })
+app.get('/host.css', function (req, res) {
+  res.sendFile(path.join(__dirname + '/host/host.css'))
+})
 
 //Apps
 app.use('/apps',express.static('apps'))

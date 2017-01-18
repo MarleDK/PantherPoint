@@ -6,7 +6,7 @@ var snake = {
   },
 
   init: function(){
-    $("#apps").append('<div id="snake" style="display:none"></div>')
+    $("#apps").html('<div id="snake"></div>')
     $("#snake").load("/apps/snake/client.html #game")
 
     $("#apps").delegate("#btn_snake_left", 'click', function(){
@@ -30,10 +30,16 @@ var snake = {
         default: return; // exit this handler for other keys
       }
       e.preventDefault(); // prevent the default action (scroll / move caret)
+    
     });
     room.take({type:'color', name: name},function(err,tuple){
       $("#btn_snake_right").css("background-color", tuple.data.color)
       $("#btn_snake_left").css("background-color", tuple.data.color)
+    })
+    
+    room.take({type: 'dead', name: name}, function(err, tuple){
+      $("#msg_log").html("You are dead!")
+      
     })
   }
 };

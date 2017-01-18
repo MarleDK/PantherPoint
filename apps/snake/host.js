@@ -98,11 +98,17 @@ var snake = {
 
       if(nx == -1 || nx == Math.ceil(snake.width/snake.cellWidth) || ny == -1 || ny == Math.ceil(snake.height/snake.cellWidth) || snake.check_collision(nx, ny))
       {
+        room.write({type:'dead', name:currentSnake.name})
+        
         currentSnake.name = null;
         var aliveSnakes = snake.snakes.filter(function(x){return x.name !== null})
         if(aliveSnakes.length == 1){
           /////////////Lav noget print af vinder
           console.log("The winner is found")
+          snake.ctx.font = "50px Arial";
+          snake.ctx.textAlign = "center";
+          snake.ctx.strokeText("The winner is " + aliveSnakes[0].name, snake.canvas.width/2, snake.canvas.height/2);
+          snake.ctx.fillText("The winner is " + aliveSnakes[0].name, snake.canvas.width/2, snake.canvas.height/2);
           snake.close(game_loop, moveWatchId)
         } else if(aliveSnakes.length == 0){
 
