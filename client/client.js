@@ -69,10 +69,11 @@ var server_url = "http://"+window.location.hostname+":3000";;
       var checkHostAlive = setInterval(function(){
         ts.readp({type:"hostActive"}, function(err, tuple){
           if(tuple == null){
+            updateView("login");
             watchHost.close(hostObject);
           }
         });
-      },timeToKeepAlive);
+      },100*60*3);
 
       var hostObject = {ts: ts, actWatch: actWatch, keepAlive: keepAlive, blockKick: blockKick, checkHostAlive: checkHostAlive};
       return hostObject;

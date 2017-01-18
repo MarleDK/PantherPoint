@@ -94,6 +94,14 @@
         $("#log").scrollTop($("#log")[0].scrollHeight);
       };
 
+      // Close button, disconnects all users and refreshes the host side
+      $("#btn_close").click(function(){
+          room.takeAll({}, function(err, tuple){
+            console.log('Closed');
+            location.reload();
+          });
+      })
+
       $(function() {
         $('.activity').click(function(e){
           hosts.take({room: room.name}, function (err, tuple) {
