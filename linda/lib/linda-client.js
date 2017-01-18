@@ -215,10 +215,6 @@
       listener = function(err, tuple) {
         return callback(err, tuple);
       };
-      this.ts.io_callbacks.push({
-        name: name,
-        listener: listener
-      });
       this.ts.linda.io.once(name, listener);
       this.ts.linda.io.emit('__linda_readp', {
         tuplespace: this.ts.name,
@@ -239,10 +235,6 @@
       listener = function(err, tuple) {
         return callback(err, tuple);
       };
-      this.ts.io_callbacks.push({
-        name: name,
-        listener: listener
-      });
       this.ts.linda.io.once(name, listener);
       this.ts.linda.io.emit('__linda_readAll', {
         tuplespace: this.ts.name,
@@ -287,10 +279,6 @@
       listener = function(err, tuple) {
         return callback(err, tuple);
       };
-      this.ts.io_callbacks.push({
-        name: name,
-        listener: listener
-      });
       this.ts.linda.io.once(name, listener);
       this.ts.linda.io.emit('__linda_takep', {
         tuplespace: this.ts.name,
@@ -311,10 +299,6 @@
       listener = function(err, tuple) {
         return callback(err, tuple);
       };
-      this.ts.io_callbacks.push({
-        name: name,
-        listener: listener
-      });
       this.ts.linda.io.once(name, listener);
       this.ts.linda.io.emit('__linda_takeAll', {
         tuplespace: this.ts.name,

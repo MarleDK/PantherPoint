@@ -105,7 +105,7 @@ class ReadTakeOption
     name = "__linda_readp_#{id}"
     listener = (err, tuple) ->
       callback err, tuple
-    @ts.io_callbacks.push {name: name, listener: listener}
+    #@ts.io_callbacks.push {name: name, listener: listener}
     @ts.linda.io.once name, listener
     @ts.linda.io.emit '__linda_readp', {tuplespace: @ts.name, tuple: tuple, id: id, options: @opts}
     return id
@@ -117,7 +117,7 @@ class ReadTakeOption
     name = "__linda_readAll_#{id}"
     listener = (err, tuple) ->
       callback err, tuple
-    @ts.io_callbacks.push {name: name, listener: listener}
+    #@ts.io_callbacks.push {name: name, listener: listener}
     @ts.linda.io.once name, listener
     @ts.linda.io.emit '__linda_readAll', {tuplespace: @ts.name, tuple: tuple, id: id, options: @opts}
     return id
@@ -139,7 +139,7 @@ class ReadTakeOption
     name = "__linda_takep_#{id}"
     listener = (err, tuple) ->
       callback err, tuple
-    @ts.io_callbacks.push {name: name, listener: listener}
+    #@ts.io_callbacks.push {name: name, listener: listener}
     @ts.linda.io.once name, listener
     @ts.linda.io.emit '__linda_takep', {tuplespace: @ts.name, tuple: tuple, id: id, options: @opts}
     return id
@@ -151,7 +151,7 @@ class ReadTakeOption
     name = "__linda_takeAll_#{id}"
     listener = (err, tuple) ->
       callback err, tuple
-    @ts.io_callbacks.push {name: name, listener: listener}
+    #@ts.io_callbacks.push {name: name, listener: listener}
     @ts.linda.io.once name, listener
     @ts.linda.io.emit '__linda_takeAll', {tuplespace: @ts.name, tuple: tuple, id: id, options: @opts}
     return id
