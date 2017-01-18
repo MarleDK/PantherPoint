@@ -128,7 +128,7 @@ var snake = {
   close: function(game_loop, moveWatchId){
     console.log(moveWatchId + ' '+ game_loop)
 
-    clearInterval(moveWatchId)
+    room.cancel(moveWatchId)
     clearInterval(game_loop)
     kickAll(room)
     setTimeout(function(){
