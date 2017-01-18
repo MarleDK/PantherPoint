@@ -28,13 +28,25 @@ var snake = {
       e.preventDefault(); // prevent the default action (scroll / move caret)
     });
 
+    //sets the client background color to the same as the snake
     room.take({type:'color', name: name},function(err,tuple){
-      $("#btn_snake_right").css("background-color", tuple.data.color)
-      $("#btn_snake_left").css("background-color", tuple.data.color)
+      $("body").css("background-color", tuple.data.color)
+    })
+
+    room.take({type:'winner', name: name},function(err,tuple){
+      $("#msg_log").css("color", "#66FF66");
+      $("#msg_log").html("You WIN!");
+      setTimeout(function(){
+        $("body").css("background-color", "#FFFFFF");
+      }, 5000);
     })
 
     room.take({type: 'dead', name: name}, function(err, tuple){
-      $("#msg_log").html("You are dead!")
+      $("#msg_log").css("color", "#FF0000");
+      $("#msg_log").html("You are dead!");
+      setTimeout(function(){
+        $("body").css("background-color", "#FFFFFF");
+      }, 5000);   
     })
   },
 

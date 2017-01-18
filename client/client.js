@@ -51,8 +51,6 @@ var watchHost = {
         updateView(tuple.data.activity)
       }
     });
-
-
     //Denne function replacer spilleren's tuple i tuple-spacet, så den ikke udløber
     var keepAlive = setInterval(function(){
       ts.replace({type: "player", name: name},{type: "player", name: name});
@@ -69,10 +67,13 @@ var watchHost = {
     var checkHostAlive = setInterval(function(){
       ts.readp({type:"hostActive"}, function(err, tuple){
         if(tuple == null){
+          updateView("login");
+          $("#navbar-brand").html("Client");
+          $("#btn_logout").hide();
           watchHost.close(hostObject);
         }
       });
-    },timeToKeepAlive);
+    },100*60*3);
 
     var hostObject = {ts: ts, actWatch: actWatch, keepAlive: keepAlive, blockKick: blockKick, checkHostAlive: checkHostAlive};
     return hostObject;
@@ -88,7 +89,7 @@ var watchHost = {
 
 };
 
-// on page load
+  // on page load
 $(function(){
   var hostWatcher;
 
@@ -115,6 +116,7 @@ $(function(){
                 hostWatcher = watchHost.init(room, name);
                 room.write({type: "player", name: name});
                 $("#btn_logout").show();
+                $("#navbar-brand").html("Hey, "+name);
                 $("#host_name").html("Connected to: "+code)
                 room.read({type:"activity"}, function(err1, tuple1){
                     updateView(tuple1.data.activity)
@@ -130,10 +132,10 @@ $(function(){
       room.take({type: 'player', name: name}, function(err, tuple){
           updateView("login");
           watchHost.close(hostWatcher)
+          $("#navbar-brand").html("Client");
       });
       $("#btn_logout").hide();
   })
-
 
   // connects to host using the ENTER key instead of having to click the button
   $(document).keypress(function(e) {

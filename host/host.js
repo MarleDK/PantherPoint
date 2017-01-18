@@ -94,19 +94,13 @@
         $("#log").scrollTop($("#log")[0].scrollHeight);
       };
 
-      function countDown (activity, time) {
-        print(activity + " starting in " + time + " seconds");
-        (function myLoop (i) {
-           setTimeout(function () {
-              if (i === 0) {
-                print(activity + " starting...");
-              } else {
-                print(activity + " starting in " + i + " seconds");
-              }
-              if (i--) myLoop(i);
-           }, 1000)
-        })(--time);
-      }
+      // Close button, disconnects all users and refreshes the host side
+      $("#btn_close").click(function(){
+          room.takeAll({}, function(err, tuple){
+            console.log('Closed');
+            location.reload();
+          });
+      })
 
       $(function() {
         $('.activity').click(function(e){
