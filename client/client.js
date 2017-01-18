@@ -72,6 +72,7 @@ var server_url = "http://"+window.location.hostname+":3000";;
           if(tuple == null){
             updateView("login");
             $("#navbar-brand").html("Client");
+            $("#btn_logout").hide();
             watchHost.close(hostObject);
           }
         });

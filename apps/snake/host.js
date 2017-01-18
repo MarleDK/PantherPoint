@@ -118,6 +118,7 @@ var snake = {
         currentSnake.name = null;
         var aliveSnakes = snake.snakes.filter(function(x){return x.name !== null})
         if(aliveSnakes.length == 1){
+          room.write({type:'winner', name:aliveSnakes[0].name})
           snake.ctx.font = "50px Arial";
           snake.ctx.textAlign = "center";
           snake.ctx.strokeText("The winner is " + aliveSnakes[0].name, snake.canvas.width/2, snake.canvas.height/2);

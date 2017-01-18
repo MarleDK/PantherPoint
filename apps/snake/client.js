@@ -39,7 +39,16 @@ var snake = {
       $("body").css("background-color", tuple.data.color)
     })
     
+    room.take({type:'winner', name: name},function(err,tuple){
+      $("#msg_log").css("color", "#66FF66");
+      $("#msg_log").html("You WIN!");
+      setTimeout(function(){ 
+        $("body").css("background-color", "#FFFFFF");
+      }, 5000); 
+    })
+    
     room.take({type: 'dead', name: name}, function(err, tuple){ 
+      $("#msg_log").css("color", "#FF0000");
       $("#msg_log").html("You are dead!");
       setTimeout(function(){ 
         $("body").css("background-color", "#FFFFFF");
