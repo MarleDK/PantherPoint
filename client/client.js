@@ -116,6 +116,7 @@ var server_url = "http://"+window.location.hostname+":3000";;
                   hostWatcher = watchHost.init(room, name);
                   room.write({type: "player", name: name});
                   $("#btn_logout").show();
+                  $("#navbar-brand").html("Hey, "+name);
                   $("#host_name").html("Connected to: "+code)
                   room.read({type:"activity"}, function(err1, tuple1){
                       updateView(tuple1.data.activity)
