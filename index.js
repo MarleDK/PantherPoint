@@ -64,24 +64,13 @@ app.get('/host.js', function (req, res) {
 app.get('/host.css', function (req, res) {
   res.sendFile(path.join(__dirname + '/host/host.css'))
 })
+app.get('/kick.js', function (req, res) {
+  res.sendFile(path.join(__dirname + '/host/kick.js'))
+})
 
 //Apps
 app.use('/apps',express.static('apps'))
 
-/*
-// Chat
-app.get('/chat', function (req, res) {
-  res.sendFile(path.join(__dirname + '/chat/index.html'))
-})
-app.get('/chat/messenger', function (req, res) {
-  res.sendFile(path.join(__dirname + '/chat/message.html'))
-})
-app.get('/chat/:name', function (req, res) {
-  res.render(path.join(__dirname + '/chat/chat.html'), {
-    name: req.params.name
-  });
-})
-*/
 //Dev
 app.get('/chat2', function (req, res) {
   res.sendFile(path.join(__dirname + '/chat.html'))

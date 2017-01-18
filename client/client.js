@@ -58,6 +58,11 @@ var server_url = "http://"+window.location.hostname+":3000";;
         ts.replace({type: "player", name: name},{type: "player", name: name});
       },timeToKeepAlive);
 
+      //Denne function fjerner en evt. kick tuple, så serveren ikke fjerner klienten, så længe klienten er i live
+      var blockKick = ts.watch({type:'kick',name, name}, (err, tuple) => {
+        ts.take({type:'kick',name, name}, (e,t) => {})
+      })
+
       //Denne del sletter watch functioner, så de ikke kører mere, hvis host'en ikke er connected til tuple-spacet mere
       //Og sletter setInterval's
 
@@ -69,14 +74,16 @@ var server_url = "http://"+window.location.hostname+":3000";;
         });
       },timeToKeepAlive);
 
-      var hostObject = {ts: ts, actWatch: actWatch, keepAlive: keepAlive, checkHostAlive: checkHostAlive};
+      var hostObject = {ts: ts, actWatch: actWatch, keepAlive: keepAlive, blockKick: blockKick, checkHostAlive: checkHostAlive};
       return hostObject;
     },
 
     close: function(hostObject) {
       hostObject.ts.cancel(hostObject.actWatch)
+      hostObject.ts.cancel(hostObject.blockKick)
       clearInterval(hostObject.keepAlive)
       clearInterval(hostObject.checkHostAlive)
+
     }
 
   };
