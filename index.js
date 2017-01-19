@@ -99,5 +99,5 @@ app.get('/bootstrap/bootstrap.js', function(req, res) {
 });
 
 http.listen(3000, function () {
-  console.log('app listening')
+  console.log('app listening on port :3000')
 })
