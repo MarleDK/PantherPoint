@@ -4,7 +4,7 @@
       var hosts = linda.tuplespace('hosts');
       var room;
       var listOfViews = [{activityName:'none', init:function(){$('canvas').hide(); $('#log').show();}}]
-      const timeToKeepAlive = 60*1000*3;
+      const timeToKeepAlive = 60*100*3;
       var hostRoomKeepAliveID;
 
 

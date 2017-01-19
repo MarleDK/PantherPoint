@@ -7,11 +7,11 @@ var snake = {
 
   init: function(){
     $("#apps").html('<div id="snake"></div>')
-    $("#snake").load("/apps/snake/client.html #game")
+    $("#snake").load("/apps/snake/client.html #game",null,() => {
+      $("#btn_snake_left").click( () => {snake.moveFunc(-1)})
 
-    $("#btn_snake_left").click( () => {snake.moveFunc(-1)})
-
-    $("#btn_snake_right").click( () => {snake.moveFunc(1)})
+      $("#btn_snake_right").click( () => {snake.moveFunc(1)})
+    })
 
     $(document).bind('keydown.snake',function(e) {
       switch(e.which) {
@@ -46,7 +46,7 @@ var snake = {
       $("#msg_log").html("You are dead!");
       setTimeout(function(){
         $("body").css("background-color", "#FFFFFF");
-      }, 5000);   
+      }, 5000);
     })
   },
 
