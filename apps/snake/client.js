@@ -11,22 +11,22 @@ var snake = {
       $("#btn_snake_left").click( () => {snake.moveFunc(-1)})
 
       $("#btn_snake_right").click( () => {snake.moveFunc(1)})
+      $(document).bind('keydown.snake',function(e) {
+        switch(e.which) {
+          case 37: // left
+          snake.moveFunc(-1)
+          break;
+
+          case 39: // right
+          snake.moveFunc(1)
+          break;
+
+          default: return; // exit this handler for other keys
+        }
+        e.preventDefault(); // prevent the default action (scroll / move caret)
+      });
     })
 
-    $(document).bind('keydown.snake',function(e) {
-      switch(e.which) {
-        case 37: // left
-        snake.moveFunc(-1)
-        break;
-
-        case 39: // right
-        snake.moveFunc(1)
-        break;
-
-        default: return; // exit this handler for other keys
-      }
-      e.preventDefault(); // prevent the default action (scroll / move caret)
-    });
 
     //sets the client background color to the same as the snake
     room.take({type:'color', name: name},function(err,tuple){

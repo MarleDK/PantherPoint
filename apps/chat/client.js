@@ -3,24 +3,27 @@ var chat = {
 
   init: function(){
     $("#apps").append('<div id="chat" style="display:none"></div>')
-    $("#chat").load("/apps/chat/client.html #input_create")
+    $("#chat").load("/apps/chat/client.html #input_create" , null, () => {
+      $("#chat_send").click(function () {
+        msg = $("#msg").val();
 
-    $("#apps").delegate("#chat_send","click",function () {
-      msg = $("#msg").val();
-
-      $("#msg").val('').focus();
-      room.write({type: "msg", from: name, msg: msg});
-    });
-
-    $(document).keypress(function(e) {
-      if(e.which == 13) {
-        $("#chat_send").click()
-      }
+        $("#msg").val('').focus();
+        room.write({type: "msg", from: name, msg: msg});
+      })
+      $(document).bind('keypress.chat',function(e) {
+        if(e.which == 13) {
+          $("#chat_send").click()
+        }
+      })
     })
+
+
   },
 
-  close: function(){}
-
+  close: function(){
+    $(document).unbind('keydown.snake');
+    $("#chat_send").unbind();
+  }
 }
 
 $(function(){
