@@ -75,10 +75,12 @@ var snake = {
       setTimeout(function () {
         if (i === 0) {
           console.log("starting...");
+          $('#countdown').html('');
           if(typeof game_loop != "undefined") clearInterval(game_loop);
           var game_loop = setInterval(function(){snake.paint(game_loop,moveWatchId)}, 50);
         } else {
           console.log("starting in " + i + " seconds");
+          $('#countdown').html('Game starting in '+i);
         }
         if (i--) myLoop(i);
       }, 1000)
